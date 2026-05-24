@@ -1,0 +1,29 @@
+{
+  "name": "@ootomic/domain-pipeline-schema",
+  "version": "0.1.0",
+  "description": "Formal grammar and validators for the domain extraction pipeline",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./node0": "./dist/nodes/node0.js",
+    "./node1": "./dist/nodes/node1.js",
+    "./node2": "./dist/nodes/node2.js",
+    "./node3": "./dist/nodes/node3.js",
+    "./node4": "./dist/nodes/node4.js",
+    "./validate": "./dist/validate.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "validate": "ts-node src/cli.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "typescript": "^5.9.3"
+  }
+}
