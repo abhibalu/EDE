@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+*.tsbuildinfo
+.npm/
+
+# Editors / IDE
+.vscode/
+.idea/
+
+# Claude Code local settings (per-user, not for VCS)
+.claude/settings.local.json
