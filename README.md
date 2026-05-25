@@ -41,12 +41,11 @@ If any layer fails, the node is re-prompted. No partial state ever propagates.
 ## Repository layout
 
 ```
-V1/          Earliest pass — node prompts only (markdown)
-V2/          TypeScript implementation: Zod schemas, validators, prompts
-v3_python/   Current Python implementation: Pydantic models, CLI, assemblers
+v3_python/   Python implementation: Pydantic models, validators, CLI, assemblers
 ```
 
-`v3_python/` is the active version. V1 and V2 are kept for the design lineage.
+The earlier passes — V1 (markdown prompts) and V2 (TypeScript / Zod) — live on
+the `archive/v1-v2` branch for design lineage. They are not part of `main`.
 
 ### v3_python (current)
 
@@ -74,6 +73,5 @@ See [`v3_python/README.md`](v3_python/README.md) for the full CLI/API surface an
 
 ## Status
 
-- V1: archived (markdown prompts only)
-- V2: archived (TypeScript / Zod implementation)
-- v3_python: active
+- v3_python: active (this branch)
+- V1 (markdown prompts) and V2 (TypeScript / Zod): preserved on `archive/v1-v2`
