@@ -1,0 +1,83 @@
+"""Node schema re-exports."""
+
+from .node0 import (
+    Architecture,
+    ExternalService,
+    Identity,
+    KeyFile,
+    Node0Output,
+    Persistence,
+    SchemaEntity,
+)
+from .node1 import (
+    DomainEvent,
+    Node1Metadata,
+    Node1Output,
+    ScanArea,
+    TruncationInfo,
+)
+from .node2 import (
+    Aggregate,
+    CrossAggTransition,
+    Gap,
+    GapSummary,
+    ImpossibleCombination,
+    MigrationCandidate,
+    Node2Output,
+    StateEntry,
+    Transition,
+)
+from .node3 import (
+    ConfirmedObstacle,
+    GoalNode,
+    NewObstacle,
+    Node3Metrics,
+    Node3Output,
+    Phase,
+    Requirement,
+)
+from .node4 import (
+    ChangelogEntry,
+    FileCategory,
+    FileIndexEntry,
+    Node4Metrics,
+    Node4Output,
+    SourceRefs,
+)
+
+__all__ = [
+    "Architecture",
+    "ExternalService",
+    "Identity",
+    "KeyFile",
+    "Node0Output",
+    "Persistence",
+    "SchemaEntity",
+    "DomainEvent",
+    "Node1Metadata",
+    "Node1Output",
+    "ScanArea",
+    "TruncationInfo",
+    "Aggregate",
+    "CrossAggTransition",
+    "Gap",
+    "GapSummary",
+    "ImpossibleCombination",
+    "MigrationCandidate",
+    "Node2Output",
+    "StateEntry",
+    "Transition",
+    "ConfirmedObstacle",
+    "GoalNode",
+    "NewObstacle",
+    "Node3Metrics",
+    "Node3Output",
+    "Phase",
+    "Requirement",
+    "ChangelogEntry",
+    "FileCategory",
+    "FileIndexEntry",
+    "Node4Metrics",
+    "Node4Output",
+    "SourceRefs",
+]
