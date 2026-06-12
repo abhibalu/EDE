@@ -10,6 +10,18 @@ Each modality is a separate module:
 All findings are advisory (WARN). They do not block the pipeline.
 """
 
-from .paths import verify_recon_paths
+from .paths import (
+    verify_aggregates_paths,
+    verify_events_paths,
+    verify_fragment_paths,
+    verify_recon_paths,
+    verify_spec_paths,
+)
 
-__all__ = ["verify_recon_paths"]
+__all__ = [
+    "verify_recon_paths",
+    "verify_events_paths",
+    "verify_aggregates_paths",
+    "verify_spec_paths",
+    "verify_fragment_paths",
+]
