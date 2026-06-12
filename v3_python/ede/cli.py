@@ -310,6 +310,36 @@ def validate_fragment(
     typer.echo("Fragment valid.")
 
 
+# -- verify-paths -------------------------------------------------------------
+
+
+@app.command(name="verify-paths")
+def verify_paths(
+    node0_file: Annotated[Path, typer.Option("--node0", help="Path to Node 0 JSON")],
+    repo: Annotated[Path, typer.Option(help="Repository root that recon claims describe")],
+) -> None:
+    """Layer 4: probe every path-typed field in Node 0 against the repo on disk (advisory)."""
+    from .nodes.node0 import Node0Output
+    from .verifiers import verify_recon_paths
+
+    if not node0_file.exists():
+        typer.echo(f"Error: {node0_file} does not exist", err=True)
+        raise typer.Exit(1)
+    if not repo.exists() or not repo.is_dir():
+        typer.echo(f"Error: --repo {repo} is not a directory", err=True)
+        raise typer.Exit(1)
+
+    n0 = Node0Output.model_validate(json.loads(node0_file.read_text()))
+    findings = verify_recon_paths(n0, repo)
+
+    for f in findings:
+        icon = {"ERROR": "X", "WARN": "!", "INFO": "i"}[f.level]
+        rule = f" [{f.rule}]" if f.rule else ""
+        typer.echo(f"[{icon}] {f.where}: {f.message}{rule}")
+
+    typer.echo(f"\nChecked {node0_file.name} against {repo}: {len(findings)} finding(s).")
+
+
 # -- render -------------------------------------------------------------------
 
 
