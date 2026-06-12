@@ -257,8 +257,9 @@ def coverage(
 def validate_fragment(
     node: Annotated[int, typer.Option(help="Node number (1, 2, or 3)")],
     fragment: Annotated[Path, typer.Option(help="Path to fragment JSON file")],
+    repo: Annotated[Optional[Path], typer.Option(help="If set, run L4 path-existence checks on the fragment (advisory)")] = None,
 ) -> None:
-    """Validate a sub-agent fragment against its schema (L1 + cheap L2)."""
+    """Validate a sub-agent fragment against its schema (L1 + cheap L2, optional L4)."""
     from pydantic import ValidationError
 
     from .fragments import Node1Fragment, Node2Fragment, Node3Fragment
@@ -307,7 +308,82 @@ def validate_fragment(
     if node == 2 and parsed.transitions:
         typer.echo(f"L2 OK: {len(parsed.transitions)} transitions reference valid states")
 
+    if repo is not None:
+        if not repo.exists() or not repo.is_dir():
+            typer.echo(f"Error: --repo {repo} is not a directory", err=True)
+            raise typer.Exit(1)
+        from .verifiers import verify_fragment_paths
+
+        findings = verify_fragment_paths(parsed, repo)
+        for f in findings:
+            icon = {"ERROR": "X", "WARN": "!", "INFO": "i"}[f.level]
+            rule = f" [{f.rule}]" if f.rule else ""
+            typer.echo(f"[{icon}] {f.where}: {f.message}{rule}")
+        typer.echo(f"L4: {len(findings)} path finding(s) (advisory)")
+
     typer.echo("Fragment valid.")
+
+
+# -- verify-paths -------------------------------------------------------------
+
+
+@app.command(name="verify-paths")
+def verify_paths(
+    repo: Annotated[Path, typer.Option(help="Repository root that pipeline claims describe")],
+    node0_file: Annotated[Optional[Path], typer.Option("--node0", help="Path to Node 0 JSON")] = None,
+    node1_file: Annotated[Optional[Path], typer.Option("--node1", help="Path to Node 1 JSON")] = None,
+    node2_file: Annotated[Optional[Path], typer.Option("--node2", help="Path to Node 2 JSON")] = None,
+    node4_file: Annotated[Optional[Path], typer.Option("--node4", help="Path to Node 4 JSON")] = None,
+) -> None:
+    """Layer 4: probe every path-typed field across pipeline artifacts against the repo on disk (advisory).
+
+    Pass any combination of --node0/--node1/--node2/--node4. Node 3 has no
+    path-typed fields. All findings are WARN; exit code is always 0.
+    """
+    from .nodes.node0 import Node0Output
+    from .nodes.node1 import Node1Output
+    from .nodes.node2 import Node2Output
+    from .nodes.node4 import Node4Output
+    from .verifiers import (
+        verify_aggregates_paths,
+        verify_events_paths,
+        verify_recon_paths,
+        verify_spec_paths,
+    )
+
+    if not repo.exists() or not repo.is_dir():
+        typer.echo(f"Error: --repo {repo} is not a directory", err=True)
+        raise typer.Exit(1)
+
+    targets: list[tuple[str, Path, type, object]] = []
+    for label, fp, model, verifier in (
+        ("node0", node0_file, Node0Output, verify_recon_paths),
+        ("node1", node1_file, Node1Output, verify_events_paths),
+        ("node2", node2_file, Node2Output, verify_aggregates_paths),
+        ("node4", node4_file, Node4Output, verify_spec_paths),
+    ):
+        if fp is not None:
+            targets.append((label, fp, model, verifier))
+
+    if not targets:
+        typer.echo("Error: provide at least one --node0/--node1/--node2/--node4", err=True)
+        raise typer.Exit(1)
+
+    total = 0
+    for label, fp, model, verifier in targets:
+        if not fp.exists():
+            typer.echo(f"Error: {fp} does not exist", err=True)
+            raise typer.Exit(1)
+        parsed = model.model_validate(json.loads(fp.read_text()))
+        findings = verifier(parsed, repo)
+        for f in findings:
+            icon = {"ERROR": "X", "WARN": "!", "INFO": "i"}[f.level]
+            rule = f" [{f.rule}]" if f.rule else ""
+            typer.echo(f"[{icon}] {label} | {f.where}: {f.message}{rule}")
+        typer.echo(f"  {label}: {len(findings)} finding(s)")
+        total += len(findings)
+
+    typer.echo(f"\nChecked {len(targets)} artifact(s) against {repo}: {total} finding(s).")
 
 
 # -- render -------------------------------------------------------------------
