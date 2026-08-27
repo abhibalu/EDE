@@ -1,0 +1,646 @@
+[
+ {
+  "id": "O-AUTH-1",
+  "severity": "HIGH",
+  "gapSource": "AUTH-G1",
+  "resolutionType": null,
+  "description": "forgotPassword swallows sendForgotPassword rejections via .catch(console.error). Reset emails can silently fail, so a user who requested a reset never receives the link and there is no audit trail of the delivery failure."
+ },
+ {
+  "id": "O-AUTH-2",
+  "severity": "MED",
+  "gapSource": "AUTH-G2",
+  "resolutionType": null,
+  "description": "createUser swallows onCreateUserHook failures with .catch(console.error). A failure to create the personal organisation leaves a User with no personal org, breaking the GUARANTEE that every new user has a workspace."
+ },
+ {
+  "id": "O-AUTH-3",
+  "severity": "MED",
+  "gapSource": "AUTH-G3",
+  "resolutionType": null,
+  "description": "CSRF mismatch on /authorize throws an AppError but writes no UserSecurityAuditLog. The source-code comment 'Todo: (RR7) Add logging here.' acknowledges the gap. Brute-forced CSRF attempts are forensically invisible."
+ },
+ {
+  "id": "O-AUTH-4",
+  "severity": "LOW",
+  "gapSource": "AUTH-G4",
+  "resolutionType": null,
+  "description": "When OAuth links to an existing unverified user, the user's password is set to null with a 'Todo: (RR7)' comment. Until RR7 lands, users lose their existing password-based credentials without explicit notification."
+ },
+ {
+  "id": "O-AUTH-5",
+  "severity": "LOW",
+  "gapSource": "AUTH-G5",
+  "resolutionType": null,
+  "description": "verifyEmail returns sentinel string states (NOT_FOUND, EXPIRED, ALREADY_VERIFIED) instead of throwing. Callers must remember to branch on state; an unchecked caller would treat any return as success."
+ },
+ {
+  "id": "O-AUTH-6",
+  "severity": "HIGH",
+  "gapSource": "AUTH-G6",
+  "resolutionType": null,
+  "description": "enableTwoFactorAuthentication captures recoveryCodes via an outer `let` mutated from inside the prisma.$transaction callback. If the transaction is retried by Prisma the codes returned to the caller may not match what was persisted, and a partial write could leave a TwoFactorOn user without the recovery codes they think they received."
+ },
+ {
+  "id": "O-AUTH-7",
+  "severity": "LOW",
+  "gapSource": "AUTH-G7",
+  "resolutionType": null,
+  "description": "invalidateSessions encodes two distinct domain events (SESSION_REVOKED vs SIGN_OUT) via the boolean isRevoke flag. The domain meaning is implicit in a caller's argument rather than being two named operations, which makes audit-log analysis brittle."
+ },
+ {
+  "id": "O-AUTH-8",
+  "severity": "HIGH",
+  "gapSource": "AUTH-G8",
+  "resolutionType": null,
+  "description": "resetPassword and updatePassword commit the password-change transaction BEFORE the route handler calls invalidateSessions. A crash or network failure between commit and the invalidate call leaves the system with a rotated password but still-valid stolen sessions."
+ },
+ {
+  "id": "O-AUTH-9",
+  "severity": "MED",
+  "gapSource": "AUTH-G9",
+  "resolutionType": null,
+  "description": "Session expiry deletes the Session row inside validateSessionToken with no corresponding UserSecurityAuditLog entry. Operators cannot reconstruct when a user's session lapsed (vs. was revoked vs. signed out) from the audit log."
+ },
+ {
+  "id": "O-AUTH-10",
+  "severity": "CRITICAL",
+  "gapSource": "AUTH-G10",
+  "resolutionType": null,
+  "description": "disableUser performs the disable transaction but writes NO UserSecurityAuditLog entry and does NOT invalidate active sessions. A disabled user's existing browser session continues to validate (validateSessionToken does not check User.disabled) until expiry or sliding rotation. Combined with sliding expiry, a disabled user can be effectively never-logged-out."
+ },
+ {
+  "id": "O-AUTH-11",
+  "severity": "MED",
+  "gapSource": "AUTH-G11",
+  "resolutionType": null,
+  "description": "createSession writes the Session row and the SIGN_IN UserSecurityAuditLog row as two separate prisma.create calls (not in a $transaction). A crash between the two leaves a session with no audit footprint, or an audit footprint with no session if ordered differently."
+ },
+ {
+  "id": "O-AUTH-12",
+  "severity": "HIGH",
+  "gapSource": "AUTH-G12",
+  "resolutionType": null,
+  "description": "validateSessionToken silently extends expiresAt by 30 days whenever called within 15 days of expiry, without any audit log or rate limit. An attacker holding a stolen session token can keep it alive indefinitely by polling once a month; effective session lifetime is unbounded."
+ },
+ {
+  "id": "O-AUTH-13",
+  "severity": "HIGH",
+  "gapSource": "AUTH-G13",
+  "resolutionType": null,
+  "description": "createPasskey deletes the PASSKEY_CHALLENGE VerificationToken BEFORE calling verifyRegistrationResponse. If the verification call throws or the process crashes, the WebAuthn challenge is gone and the user must restart enrolment, but the challenge cannot be replayed -- this is good for replay protection, but if the order were reversed the challenge could be reused. More importantly, the expiry check on the challenge runs AFTER the delete, meaning an attacker with a leaked but expired challenge token destroys the legitimate challenge for the user before being rejected."
+ },
+ {
+  "id": "O-ENV-1",
+  "severity": "CRITICAL",
+  "gapSource": "ENV-G1",
+  "resolutionType": null,
+  "description": "Race on 'all recipients signed' check in complete-document-with-token: the haveAllRecipientsSigned query is executed AFTER the transaction commits and outside any lock, so two concurrent last-signer completions can both observe 'all signed' and enqueue duplicate internal.seal-document jobs (double sealing, duplicate audit logs, duplicate DOCUMENT_COMPLETED webhooks)."
+ },
+ {
+  "id": "O-ENV-2",
+  "severity": "CRITICAL",
+  "gapSource": "ENV-G2",
+  "resolutionType": null,
+  "description": "orphan-envelopes ends with prisma.envelope.deleteMany({ where: { teamId } }) with NO status filter. This irreversibly hard-deletes ALL remaining envelopes for the team (including DRAFT documents and ALL templates) without audit log or webhook. There is no recovery path."
+ },
+ {
+  "id": "O-ENV-3",
+  "severity": "HIGH",
+  "gapSource": "ENV-G3",
+  "resolutionType": null,
+  "description": "Two-phase rejection: rejectDocumentWithToken flips Recipient.signingStatus=REJECTED and enqueues internal.seal-document immediately, but Envelope.status remains PENDING until the seal job runs. Any reader between these two moments sees a PENDING envelope with a REJECTED recipient -- an impossible-looking state that callers (webhooks, listings, signing pages for other recipients) must defensively handle."
+ },
+ {
+  "id": "O-ENV-4",
+  "severity": "HIGH",
+  "gapSource": "ENV-G4",
+  "resolutionType": null,
+  "description": "Soft-delete is gated on isDocumentCompleted(envelope.status), so DRAFT and PENDING envelopes are hard-deleted instead. A user (or team admin) who deletes a DRAFT or in-flight PENDING envelope by mistake has no recovery: the row, audit logs (via cascade), and field history are gone. There is no trash/restore concept for non-final envelopes."
+ },
+ {
+  "id": "O-ENV-5",
+  "severity": "HIGH",
+  "gapSource": "ENV-G5",
+  "resolutionType": null,
+  "description": "Draft auto-seal short-circuit gap: seal-document.handler computes isComplete from recipients (CC counted as auto-signed) but rejects with 'Document is not complete' if no recipients signed, yet there is no explicit guard preventing a DRAFT envelope (status DRAFT) being passed to seal if the job were triggered. Combined with the absence of a status guard at the top of run(), a DRAFT envelope whose only recipients are CC could in principle skip PENDING entirely if the seal job is invoked for it."
+ },
+ {
+  "id": "O-ENV-6",
+  "severity": "MED",
+  "gapSource": "ENV-G6",
+  "resolutionType": null,
+  "description": "AttachmentAdded is blocked when status is COMPLETED or REJECTED, but there is no symmetric requirement (or audit) that attachments be finalized BEFORE the seal job runs. A late-arriving AttachmentAdded between the last DocumentRecipientCompleted and the seal-document job committing the status flip will succeed and not be reflected in the sealed PDF / certificate."
+ },
+ {
+  "id": "O-ENV-7",
+  "severity": "MED",
+  "gapSource": "ENV-G7",
+  "resolutionType": null,
+  "description": "Template-type envelope mutations (TemplateInstantiated via create-document-from-template, TemplateDirectLinkEnabled via create-template-direct-link, duplicate-envelope for TEMPLATE targets) do not emit DocumentAuditLog rows. Audit coverage is asymmetric: DOCUMENT envelopes have rich audit trails while TEMPLATE envelopes (which can be cloned into many signed DOCUMENTs) have none."
+ },
+ {
+  "id": "O-ENV-8",
+  "severity": "MED",
+  "gapSource": "ENV-G8",
+  "resolutionType": null,
+  "description": "EnvelopeItemPdfReplaced swallows the field-coordinate re-fetch failure with `console.error(err)` instead of failing the operation or rolling back. This can leave fields pointing at stale page coordinates that no longer match the replaced PDF, producing silently misaligned signatures on the next seal."
+ },
+ {
+  "id": "O-ENV-9",
+  "severity": "LOW",
+  "gapSource": "ENV-G9",
+  "resolutionType": null,
+  "description": "Hard-delete of a DRAFT envelope that was never sent emits a DOCUMENT_CANCELLED webhook. Subscribers cannot distinguish 'sender abandoned a never-sent draft' from 'sender cancelled an in-flight document', forcing webhook consumers into defensive filtering by prior state (which they do not necessarily have)."
+ },
+ {
+  "id": "O-JOB-1",
+  "severity": "HIGH",
+  "gapSource": "JOB-G1",
+  "resolutionType": null,
+  "description": "BackgroundJobTaskStatus.FAILED enum value is declared in schema.prisma but is never assigned by any code path. Failed tasks remain PENDING with retried>0, hiding terminal task failure and conflating 'never attempted' with 'permanently failed'."
+ },
+ {
+  "id": "O-JOB-2",
+  "severity": "LOW",
+  "gapSource": "JOB-G2",
+  "resolutionType": null,
+  "description": "BackgroundJob.completedAt is reused for both COMPLETED and FAILED terminal states (lines 299-308 set it on success, lines 316-326 set it on failure). Operators cannot distinguish successful completion from terminal failure by timestamp alone \u2014 must inspect status."
+ },
+ {
+  "id": "O-JOB-3",
+  "severity": "MED",
+  "gapSource": "JOB-G3",
+  "resolutionType": null,
+  "description": "BackgroundJob state guard relies on an UPDATE ... WHERE status=PENDING returning zero rows on stale dispatches (e.g. duplicate HTTP retries). This is an implicit state-check encoded in the SQL where-clause with no explicit ownership/lease record, making concurrent dispatch reasoning fragile."
+ },
+ {
+  "id": "O-JOB-4",
+  "severity": "HIGH",
+  "gapSource": "JOB-G4",
+  "resolutionType": null,
+  "description": "seal-document commits envelope status -> COMPLETED|REJECTED inside a Prisma transaction (lines 262-288) but fires triggerWebhook AFTER the transaction commits (lines 307-312). A crash or process exit in this window leaves a sealed/completed envelope with no DOCUMENT_COMPLETED or DOCUMENT_REJECTED webhook ever dispatched."
+ },
+ {
+  "id": "O-JOB-5",
+  "severity": "HIGH",
+  "gapSource": "JOB-G5",
+  "resolutionType": null,
+  "description": "process-signing-reminder.handler.ts atomically marks lastReminderSentAt and clears nextReminderAt BEFORE invoking mailer.sendMail. If the mail send subsequently fails or throws, the next reminder slot has already been shifted forward and the recipient silently never receives a reminder for that cycle."
+ },
+ {
+  "id": "O-JOB-6",
+  "severity": "MED",
+  "gapSource": "JOB-G6",
+  "resolutionType": null,
+  "description": "send-signing-email.handler.ts splits mailer.sendMail and recipient.update(sendStatus=SENT) into two separate io.runTask steps. On replay (BackgroundJob retried after a partial failure between the two tasks) the email can be sent a second time before the SENT flag persists, producing duplicate signing emails."
+ },
+ {
+  "id": "O-JOB-7",
+  "severity": "MED",
+  "gapSource": "JOB-G7",
+  "resolutionType": null,
+  "description": "send-document-completed-emails.handler.ts iterates recipients using Promise.all (not Promise.allSettled). The first rejection short-circuits the remaining sends and surfaces the whole BackgroundJob as failed \u2014 until LocalJobProvider's retry path replays the handler, recipients ordered after the failing one receive no completion email."
+ },
+ {
+  "id": "O-JOB-8",
+  "severity": "HIGH",
+  "gapSource": "JOB-G8",
+  "resolutionType": null,
+  "description": "submitJobToEndpoint dispatches the job via fetch().catch(()=>null) raced against a 150ms setTimeout. The fetch is fire-and-forget: a network failure, a non-200 response, or a slow target that loses the request after 150ms is silently swallowed, and the BackgroundJob row stays in PENDING with no automatic re-dispatch path."
+ },
+ {
+  "id": "O-JOB-9",
+  "severity": "MED",
+  "gapSource": "JOB-G9",
+  "resolutionType": null,
+  "description": "triggerWebhook wraps Promise.allSettled over per-webhook jobs.triggerJob calls in an outer try/catch that throws a generic 'Failed to trigger webhook' Error. Per-webhook trigger failures (e.g. a Prisma error creating the execute-webhook BackgroundJob row) are collapsed and observability is lost."
+ },
+ {
+  "id": "O-JOB-10",
+  "severity": "MED",
+  "gapSource": "JOB-G10",
+  "resolutionType": null,
+  "description": "executeWebhookCall collapses all thrown delivery errors (network timeout, DNS failure, TLS error, malformed response) into a single failure record with responseCode=0. The persisted WebhookCall row cannot distinguish 'never reached endpoint' from 'endpoint returned bogus payload', impairing root-cause analysis and replay decisions."
+ },
+ {
+  "id": "O-JOB-11",
+  "severity": "LOW",
+  "gapSource": "JOB-G11",
+  "resolutionType": null,
+  "description": "The retry transition (Processing -> Pending) only console.log()s the underlying error at line 310 of local.ts ('console.log(`[JOBS]: Job ${options.name} failed`, error)') before resubmitting. There is no structured logging, no metric, and no correlation with the BackgroundJob row, so retry storms are hard to detect."
+ },
+ {
+  "id": "O-ORG-1",
+  "severity": "HIGH",
+  "gapSource": "ORG-G1",
+  "resolutionType": null,
+  "description": "Stripe customer creation is best-effort and swallowed in createOrganisation/createPersonalOrganisation: the catch returns undefined and the org is still created without a customerId, leaving a 'Todo: (LOGS)' marker and breaking billing reconciliation."
+ },
+ {
+  "id": "O-ORG-2",
+  "severity": "CRITICAL",
+  "gapSource": "ORG-G2",
+  "resolutionType": null,
+  "description": "acceptOrganisationInvitation writes the OrganisationMember (and group membership) and updates the invite status OUTSIDE a $transaction. A crash between addUserToOrganisation and prisma.organisationMemberInvite.update leaves the invite PENDING while the member already exists."
+ },
+ {
+  "id": "O-ORG-3",
+  "severity": "HIGH",
+  "gapSource": "ORG-G3",
+  "resolutionType": null,
+  "description": "createTeamEmailVerification and deleteTeam dispatch emails / background jobs outside the DB transaction with no compensating action. If the email/job fails after commit (or the worker is down), the DB state and the user-visible workflow diverge silently."
+ },
+ {
+  "id": "O-ORG-4",
+  "severity": "HIGH",
+  "gapSource": "ORG-G4",
+  "resolutionType": null,
+  "description": "OrganisationMemberInviteStatus.DECLINED is declared in the enum and excluded by acceptOrganisationInvitation's where clause (status: { not: DECLINED }), but no code path in the ORG scan area writes status = DECLINED. The DECLINED transition is structurally unreachable -- dead enum value."
+ },
+ {
+  "id": "O-ORG-5",
+  "severity": "MED",
+  "gapSource": "ORG-G5",
+  "resolutionType": null,
+  "description": "updateTeamEmail enforces 'no email change without re-verification' only via the comment 'Note: Never allow the email to be updated without re-verifying via email.' The Prisma update narrows to data:{ name } but nothing stops a future contributor from adding email to the payload. No schema-level / repository-level invariant."
+ },
+ {
+  "id": "O-ORG-6",
+  "severity": "LOW",
+  "gapSource": "ORG-G6",
+  "resolutionType": null,
+  "description": "updateFolder collapses rename, move (parentId change), pin/unpin, and visibility change into a single Prisma update with one event. The event 'FolderUpdated' cannot tell consumers which dimension actually changed; auditing and downstream reaction logic suffer."
+ },
+ {
+  "id": "O-ORG-7",
+  "severity": "MED",
+  "gapSource": "ORG-G7",
+  "resolutionType": null,
+  "description": "Uniqueness is enforced both by a pre-read (findFirst on duplicate URL/email) and by catching Prisma P2002 errors. The pre-read race window means concurrent requests can both pass the check and only one will hit P2002 -- the user-visible behaviour is correct but the redundant work and double error-handling path is brittle."
+ },
+ {
+  "id": "O-ORG-8",
+  "severity": "LOW",
+  "gapSource": "ORG-G8",
+  "resolutionType": null,
+  "description": "createTeam hard-codes a 7500 ms transaction timeout. Under contention (large organisations, multi-group create cascade) the txn aborts and the caller sees a generic error; the value is not configurable."
+ },
+ {
+  "id": "O-ORG-9",
+  "severity": "LOW",
+  "gapSource": "ORG-G9",
+  "resolutionType": null,
+  "description": "updateFolder's move guard walks ancestors with N sequential prisma.folder.findUnique calls in a while loop. Deep trees produce O(depth) round-trips and the walk is not transactional, so a concurrent re-parent can make the check stale."
+ },
+ {
+  "id": "O-ORG-10",
+  "severity": "MED",
+  "gapSource": "ORG-G10",
+  "resolutionType": null,
+  "description": "createOrGetShareLink upserts DocumentShareLink with update: {} (no-op on conflict) and no revoke or expire path. Once a share link is minted for (envelopeId, email) it lives forever and there is no event/state for invalidation."
+ },
+ {
+  "id": "O-ORG-11",
+  "severity": "CRITICAL",
+  "gapSource": "ORG-G11",
+  "resolutionType": null,
+  "description": "orphanEnvelopes (triggered as a side-effect of TeamDeleted) issues prisma.envelope.deleteMany({ where: { teamId } }) with NO status filter at the end. Any envelope not in PENDING|REJECTED|COMPLETED (e.g. DRAFT, plus all TEMPLATE envelopes) is hard-deleted along with its recipients/fields/audit logs -- silent destructive data loss on team deletion."
+ },
+ {
+  "id": "O-ORG-12",
+  "severity": "HIGH",
+  "gapSource": "ORG-G12",
+  "resolutionType": null,
+  "description": "promoteMemberToOwnerRoute updates Organisation.ownerUserId and adds the new owner to the ADMIN group, but never demotes the previous owner from their existing group membership. ownerUserId and group-membership end up out of sync -- the previous owner keeps their ADMIN role implicitly via group membership only if they had one, but if they did not (rare admin path), the ADMIN group may contain only the new owner and the prior owner retains no enforced role."
+ },
+ {
+  "id": "O-PAPI-1",
+  "severity": "HIGH",
+  "gapSource": "PAPI-G1",
+  "resolutionType": null,
+  "description": "Pervasive silent error swallowing \u2014 try/catch blocks rewrite ALL underlying failures to a single rewritten 404 or 500 message regardless of root cause (createDocument 404 'uploading the file', createTemplate 404 'creating the template', deleteDocument 404 'Document not found', deleteTemplate 404 'Template not found', downloadSignedDocument 500 'Error downloading', resendDocument 500, createRecipient 500). Authentication errors, validation errors, S3 errors, DB errors, and quota errors all collapse to the same opaque response. Clients cannot distinguish causes; observability of failures is destroyed."
+ },
+ {
+  "id": "O-PAPI-2",
+  "severity": "HIGH",
+  "gapSource": "PAPI-G2",
+  "resolutionType": null,
+  "description": "updateRecipient swallows errors via .catch(null) on the updateEnvelopeRecipients promise, then reports 'Recipient not found' (404) for any failure cause (auth, DB, conflict, validation). The .catch(null) idiom drops the rejection reason entirely."
+ },
+ {
+  "id": "O-PAPI-3",
+  "severity": "CRITICAL",
+  "gapSource": "PAPI-G3",
+  "resolutionType": null,
+  "description": "createDocumentFromTemplate remaps body.recipients to template.recipients by ARRAY INDEX. body.recipients[i] is married to template.recipients.at(i) with no key validation. A reordered or misaligned client request silently writes the wrong name/email/role onto the wrong template recipient slot. The inline comment 'You probably shouldn't be able to change the role.' acknowledges that role overwrites are structurally permitted."
+ },
+ {
+  "id": "O-PAPI-4",
+  "severity": "HIGH",
+  "gapSource": "PAPI-G4",
+  "resolutionType": null,
+  "description": "createField bypasses the service layer entirely \u2014 uses direct prisma.$transaction with tx.field.create and tx.documentAuditLog.create, duplicating audit log construction inline rather than delegating to the field service. Similarly createDocumentFromTemplate/generateDocumentFromTemplate write authOptions and formValues via direct prisma.envelope.update / envelopeItem.update AFTER the service-layer create. This fragments audit logging and means service-layer invariants (e.g., events on field creation, transactional consistency of authOptions) are not enforced for v1 callers."
+ },
+ {
+  "id": "O-PAPI-5",
+  "severity": "CRITICAL",
+  "gapSource": "PAPI-G5",
+  "resolutionType": null,
+  "description": "deleteField does NOT validate that the documentId path param actually owns the targeted fieldId. The inline comment reads: 'Note: documentId isn't actually used anywhere, so we just return it.' Any caller with valid auth on ANY document can delete a field from ANOTHER document by supplying that doc's id in the URL and the foreign fieldId. Cross-document field deletion is structurally possible; deleteDocumentField is invoked with fieldId only."
+ },
+ {
+  "id": "O-PAPI-6",
+  "severity": "HIGH",
+  "gapSource": "PAPI-G6",
+  "resolutionType": null,
+  "description": "deleteRecipient does NOT validate that the documentId path param owns the recipientId. deleteEnvelopeRecipient is called with recipientId only. Additionally, auditUser.email is populated with team.name (a team display name, not an email), corrupting audit logs and downstream identity correlation."
+ },
+ {
+  "id": "O-PAPI-7",
+  "severity": "MED",
+  "gapSource": "PAPI-G7",
+  "resolutionType": null,
+  "description": "Implicit state coupling on process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT !== 's3': createDocument, createTemplate, and downloadSignedDocument all return 500 after the auth check completes. The 500 is conditional on environment-level config that callers cannot inspect; failures look like server errors but are deterministic configuration constraints."
+ },
+ {
+  "id": "O-PAPI-8",
+  "severity": "HIGH",
+  "gapSource": "PAPI-G8",
+  "resolutionType": null,
+  "description": "Temporal coupling on createDocument/createTemplate: the handler returns a presigned PUT URL together with the envelope/template DB row BEFORE any upload has occurred. Envelopes can persist indefinitely with no underlying PDF if the client crashes, abandons, or fails the PUT. No event in the v1 catalogue corresponds to upload completion, and no endpoint reconciles S3 object presence with envelope existence. The PROPOSED UploadConfirmed transition is the missing acknowledgment edge."
+ },
+ {
+  "id": "O-PAPI-9",
+  "severity": "MED",
+  "gapSource": "PAPI-G9",
+  "resolutionType": null,
+  "description": "sendDocument quietly mutates documentMeta via updateDocumentMeta when args.body.sendCompletionEmails is provided \u2014 this side effect is bundled inside the 'send' endpoint contract rather than expressed as a separate concern. Idempotency is approximated only by the isDocumentCompleted gate; repeated calls before completion re-trigger the documentMeta mutation and the send service call."
+ },
+ {
+  "id": "O-PAPI-10",
+  "severity": "HIGH",
+  "gapSource": "PAPI-G10",
+  "resolutionType": null,
+  "description": "generateDocumentFromTemplate writes body.authOptions via a follow-up prisma.envelope.update AFTER createDocumentFromTemplate has already created and persisted the envelope. There is no transaction spanning both writes and no rollback. If the second update fails (e.g., DB hiccup), the envelope persists WITHOUT the intended auth restrictions \u2014 a security-relevant partial-failure state. The same shape exists in createDocumentFromTemplate (envelope.update at lines 833-843)."
+ },
+ {
+  "id": "O-SIGN-1",
+  "severity": "HIGH",
+  "gapSource": "SIGN-G1",
+  "resolutionType": null,
+  "description": "CC role auto-marked SIGNED at row creation -- Signing region jumps from initial straight to the Signed final state without traversing NotSigned and without any Insert/Complete event. This couples role semantics to the signingStatus enum and makes 'who has actually signed' ambiguous in downstream queries (e.g. completion checks treat CC == SIGNED)."
+ },
+ {
+  "id": "O-SIGN-2",
+  "severity": "HIGH",
+  "gapSource": "SIGN-G2",
+  "resolutionType": null,
+  "description": "RecipientUpdated silently resets sendStatus to NOT_SENT and signingStatus to NOT_SIGNED. There is no compare-and-swap guard against a concurrent SigningEmailSent or DocumentRecipientCompleted, so an in-flight edit can demote a recipient who just signed/was emailed -- a lost-update race across Delivery and Signing regions."
+ },
+ {
+  "id": "O-SIGN-3",
+  "severity": "MED",
+  "gapSource": "SIGN-G3",
+  "resolutionType": null,
+  "description": "Expired is a derived state -- assertRecipientNotExpired is evaluated lazily on every signing/complete/reject call and throws, but no terminal status is ever persisted to the Recipient row. There is no auditable record that a recipient timed out, and no scheduled job that materialises the transition. expirationNotifiedAt is the only indirect breadcrumb."
+ },
+ {
+  "id": "O-SIGN-4",
+  "severity": "MED",
+  "gapSource": "SIGN-G4",
+  "resolutionType": null,
+  "description": "AssistantPrefillBlocked surfaces only as a Prisma findFirstOrThrow NotFound: the assistant's nested where-clause requires the owning recipient to be non-SIGNED with signingOrder >= assistant.signingOrder. There is no audit log row, no specific error code, no telemetry -- a silent guard that is indistinguishable from a generic 'field not found'."
+ },
+ {
+  "id": "O-SIGN-5",
+  "severity": "LOW",
+  "gapSource": "SIGN-G5",
+  "resolutionType": null,
+  "description": "Reminder cascade (envelope.documentMeta.reminderSettings -> team -> org -> system default) is implicit. resolveNextReminderAt receives only the envelope-resolved value; there is no debug surface that shows which level supplied the active config when a Sent recipient self-loops on RecipientReminderScheduled."
+ },
+ {
+  "id": "O-SIGN-6",
+  "severity": "MED",
+  "gapSource": "SIGN-G6",
+  "resolutionType": null,
+  "description": "FieldUninserted by an assistant (transition FieldFilled -> FieldEmpty for a field belonging to another recipient) is not audit-logged, unlike its inverse FieldInserted which writes a DOCUMENT_FIELD_PREFILLED entry. The forensic trail therefore has insertion records that can be silently reversed."
+ },
+ {
+  "id": "O-SIGN-7",
+  "severity": "HIGH",
+  "gapSource": "SIGN-G7",
+  "resolutionType": null,
+  "description": "FieldPlaced (FieldEmpty self-loop side effect) runs a PDF-whiteout step plus envelopeItem.pdfData mutation outside the Prisma transaction. If the DB commit fails after PDF rewrite, the cached PDF and the persisted Field rows diverge with no compensating action."
+ },
+ {
+  "id": "O-SIGN-8",
+  "severity": "LOW",
+  "gapSource": "SIGN-G8",
+  "resolutionType": null,
+  "description": "HACK comment in sign-field-with-token.ts:212 acknowledges that read-only fields with default values are signed via a fragile match-on-meta heuristic rather than being pre-inserted at envelope creation. The FieldEmpty -> FieldFilled transition therefore carries hidden validation coupled to fieldMeta shape."
+ },
+ {
+  "id": "O-SIGN-9",
+  "severity": "MED",
+  "gapSource": "SIGN-G9",
+  "resolutionType": null,
+  "description": "Module-level mutable signer singleton in packages/signing/index.ts uses // eslint-disable require-atomic-updates around its lazy assignment. Under concurrent first-time DocumentSealed calls two transports could be constructed before one overwrites the other, leaking certificates / file handles."
+ },
+ {
+  "id": "O-SIGN-10",
+  "severity": "HIGH",
+  "gapSource": "SIGN-G10",
+  "resolutionType": null,
+  "description": "Local signing transport falls back to loading ./example/cert.p12 from process CWD outside production. A misconfigured non-prod environment (or a prod env where NODE_ENV is unset) can silently sign documents with the bundled example certificate, producing cryptographically valid but unauthenticatable PDFs."
+ },
+ {
+  "id": "O-SIGN-11",
+  "severity": "MED",
+  "gapSource": "SIGN-G11",
+  "resolutionType": null,
+  "description": "RecipientRemoved dispatches notification emails after the DB delete has committed (deleteEnvelopeRecipient -> jobs.triggerJob). If the queue/mail send fails there is no rollback path -- the row is already gone and no compensation event is emitted, so downstream observers may never learn a recipient existed."
+ },
+ {
+  "id": "O-TRPC-1",
+  "severity": "HIGH",
+  "gapSource": "TRPC-G1",
+  "resolutionType": null,
+  "description": "verifyEmbeddingPresignTokenRoute collapses every verification failure (expired token, revoked token, malformed token, transient DB error) into a single boolean success=false via .catch(() => null). Callers cannot distinguish recoverable from terminal failures, and security incidents (e.g., revoked token replay) are indistinguishable from clock skew."
+ },
+ {
+  "id": "O-TRPC-2",
+  "severity": "MED",
+  "gapSource": "TRPC-G2",
+  "resolutionType": null,
+  "description": "createEmbeddingPresignTokenRoute rethrows any non-AppError as a generic AppError(UNKNOWN_ERROR, 'Failed to create embedding presign token'), erasing the root cause. Combined with the absence of ctx.logger.info on this route, post-mortem correlation is impossible."
+ },
+ {
+  "id": "O-TRPC-3",
+  "severity": "HIGH",
+  "gapSource": "TRPC-G3",
+  "resolutionType": null,
+  "description": "promoteMemberToOwnerRoute flips Organisation.ownerUserId to the new user but does NOT demote the previous owner from the ADMIN OrganisationGroup. Post-transaction state has two ADMIN-group members and a single ownerUserId pointer -- structural divergence between authoritative owner pointer and group membership; subsequent enforcement checks may disagree."
+ },
+ {
+  "id": "O-TRPC-4",
+  "severity": "MED",
+  "gapSource": "TRPC-G4",
+  "resolutionType": null,
+  "description": "webhookRouter.createWebhook is the only mutation in webhookRouter that omits ctx.logger.info(...). For a security-sensitive subscription event (URL + secret + event triggers), this is an observability gap relative to its sibling routes which all log inputs."
+ },
+ {
+  "id": "O-TRPC-5",
+  "severity": "LOW",
+  "gapSource": "TRPC-G5",
+  "resolutionType": null,
+  "description": "resetTwoFactor helper and its multi-table prisma.user.update are defined inline in the tRPC router file rather than in a server-only/ module. tRPC/domain-service boundary is blurred; reusing this logic from a non-tRPC entry point would require copy-paste. Code smell, not a state-machine gap."
+ },
+ {
+  "id": "O-TRPC-6",
+  "severity": "HIGH",
+  "gapSource": "TRPC-G6",
+  "resolutionType": null,
+  "description": "deleteUserRoute performs a destructive, cascading delete with no pre-existence check, no admin confirmation token, and only ctx.logger.info({ id }) for audit. A single misclicked id permanently removes a user and all cascaded rows; no soft-delete safety net at the tRPC layer."
+ },
+ {
+  "id": "O-TRPC-7",
+  "severity": "MED",
+  "gapSource": "TRPC-G7",
+  "resolutionType": null,
+  "description": "IS_BILLING_ENABLED() gate in createEmbeddingPresignTokenRoute silently bypasses the organisationClaim.flags.embedAuthoring plan check in self-hosted mode. Environment configuration becomes an implicit authorization toggle -- there is no audit event when the gate is skipped, and a self-hosted instance cannot honour plan flags even if its admins wish to."
+ },
+ {
+  "id": "O-TRPC-8",
+  "severity": "HIGH",
+  "gapSource": "TRPC-G8",
+  "resolutionType": null,
+  "description": "ApiToken.expires is a passive DateTime? attribute -- no tRPC route, cron, or service in the api-token-router actively enforces or prunes expired tokens. Enforcement is entirely deferred to whichever downstream call site invokes getApiTokenByToken; if any code path bypasses that check, expired tokens may still authenticate."
+ },
+ {
+  "id": "O-TRPC-9",
+  "severity": "MED",
+  "gapSource": "TRPC-G9",
+  "resolutionType": null,
+  "description": "resendWebhookCallRoute has no idempotency control -- repeated invocations with the same (webhookId, webhookCallId) enqueue duplicate internal.execute-webhook jobs. Subscriber endpoints will see duplicate deliveries unless they implement their own dedup."
+ },
+ {
+  "id": "O-TRPC-10",
+  "severity": "LOW",
+  "gapSource": "TRPC-G10",
+  "resolutionType": null,
+  "description": "Inline comment in resendWebhookCallRoute ('unwrap to the inner document so the handler doesn't wrap it again') reveals envelope-shape coupling between the dispatcher and the resender: a change to ZWebhookPayloadSchema in one place must be mirrored in the other or deliveries will double-wrap or fail to parse."
+ },
+ {
+  "id": "O-TRPC-11",
+  "severity": "LOW",
+  "gapSource": "TRPC-G11",
+  "resolutionType": null,
+  "description": "duplicateEnvelope is invoked from three sites (envelope-router/duplicate-envelope.ts, envelope-router/save-as-template.ts, document-router/duplicate-document.ts) with differing 'overrides' payload shapes encoding semantically distinct operations (plain duplicate vs. template-from-envelope vs. legacy document duplicate). Polymorphism is encoded in a JSON-shaped argument rather than the type system; refactoring is fragile."
+ },
+ {
+  "id": "O-N1",
+  "severity": "HIGH",
+  "gapSource": "packages/api/v1/implementation.ts \u2014 no idempotency-key header support on POST /api/v1/documents or POST /:id/send",
+  "resolutionType": "New requirement",
+  "description": "REST API mutations have no idempotency key \u2014 a client retrying a network-flaky create-document call can produce duplicate envelopes and duplicate signing emails."
+ },
+ {
+  "id": "O-N2",
+  "severity": "HIGH",
+  "gapSource": "packages/prisma/schema.prisma Envelope model has no retention policy fields; no scheduled job in packages/lib/jobs/definitions for envelope archival",
+  "resolutionType": "New requirement",
+  "description": "Completed/REJECTED envelopes accumulate forever \u2014 no retention or archival policy. Legal/compliance regimes (GDPR right-to-erasure, document retention windows) cannot be honoured systemically."
+ },
+ {
+  "id": "O-N3",
+  "severity": "HIGH",
+  "gapSource": "packages/signing/index.ts getSigner \u2014 no key-rotation hook; module-level mutable singleton holds the active signer",
+  "resolutionType": "New requirement",
+  "description": "Cryptographic signing key has no rotation procedure encoded \u2014 replacing a P12 or KMS key requires a process restart with no overlap; in-flight seal jobs may use stale credentials."
+ },
+ {
+  "id": "O-N4",
+  "severity": "MED",
+  "gapSource": "packages/lib/server-only/webhooks/trigger/trigger-webhook.ts \u2014 payload is signed with HMAC but no replay-protection timestamp window enforced on receiver side, no documentation",
+  "resolutionType": "New requirement",
+  "description": "Webhook payloads have no required timestamp+nonce protocol enforced on receivers \u2014 replay attacks against subscriber endpoints are not documented as a threat or mitigated."
+ },
+ {
+  "id": "O-N5",
+  "severity": "MED",
+  "gapSource": "packages/lib/server-only/recipient/create-envelope-recipients.ts \u2014 no per-recipient rate limit on resend; resend-document.ts iterates without throttle",
+  "resolutionType": "New requirement",
+  "description": "Resending signing emails has no per-recipient throttle. An automated client (or compromised admin token) can spam a recipient inbox with N reminders in seconds."
+ },
+ {
+  "id": "O-N6",
+  "severity": "HIGH",
+  "gapSource": "packages/prisma/schema.prisma ApiToken.expires; no service/cron filters by expires",
+  "resolutionType": "New requirement",
+  "description": "API tokens have an `expires` column but no enforcement at the auth check \u2014 expired tokens may still authenticate. The lifecycle terminal state ('Expired') is documented but not enforced."
+ },
+ {
+  "id": "O-N7",
+  "severity": "MED",
+  "gapSource": "packages/lib/server-only/organisation/create-organisation-member-invites.ts \u2014 VerificationToken.expires set to 1 hour for password reset but invite tokens use cuid with no expiry",
+  "resolutionType": "New requirement",
+  "description": "OrganisationMemberInvite tokens have no expiry \u2014 an old invite link remains valid indefinitely until accepted, even after months. Lost-laptop / stale-email leak vector."
+ },
+ {
+  "id": "O-N8",
+  "severity": "MED",
+  "gapSource": "packages/lib/server-only/webhooks/trigger/trigger-webhook.ts; packages/lib/jobs/definitions/internal/execute-webhook.handler.ts \u2014 no dead-letter queue, no admin UI to inspect failed WebhookCalls",
+  "resolutionType": "New requirement",
+  "description": "Failed webhook deliveries land in WebhookCall with status=FAILED but there is no dead-letter inspection UI/admin route and no manual replay control beyond the tRPC resendWebhookCall (one-off)."
+ },
+ {
+  "id": "O-N9",
+  "severity": "HIGH",
+  "gapSource": "packages/api/v1/implementation.ts createDocumentFromTemplate \u2014 no validation that template.userId/teamId === requester",
+  "resolutionType": "New requirement",
+  "description": "PAPI template-instantiation endpoints accept any template id the requester can read; they do not assert template ownership matches the caller's team for organisation-private templates beyond visibility checks."
+ },
+ {
+  "id": "O-N10",
+  "severity": "LOW",
+  "gapSource": "packages/lib/server-only/recipient/update-recipient-next-reminder.ts; reminderSettings JSON in DocumentMeta \u2014 no upper bound, no clamping; comments mention 3-level cascade",
+  "resolutionType": "New requirement",
+  "description": "Reminder cascade (envelope\u2192team\u2192org\u2192default) is computed at every send; if any source returns a malformed JSON (older row, manual DB tinkering), recipients may be reminded at incorrect intervals \u2014 there's no schema validation on the JSON column."
+ },
+ {
+  "id": "O-N11",
+  "severity": "LOW",
+  "gapSource": "packages/lib/server-only/user/disable-user.ts; absence of ApiToken cascade delete trigger",
+  "resolutionType": "New requirement",
+  "description": "User deletion cascades cover sessions and webhooks but ApiToken rows are 'expired' (expires=now) rather than deleted; their hashed secrets remain in the DB indefinitely creating a stale-credential trail."
+ },
+ {
+  "id": "O-N12",
+  "severity": "MED",
+  "gapSource": "packages/lib/server-only/folder/delete-folder.ts \u2014 schema marks subfolders parentId on cascade but does not move child envelopes; Envelope.folderId is set null via SetNull",
+  "resolutionType": "New requirement",
+  "description": "Deleting a folder with child envelopes silently sets Envelope.folderId=null \u2014 envelopes move to the team root with no audit trail of the prior location."
+ },
+ {
+  "id": "O-N13",
+  "severity": "MED",
+  "gapSource": "packages/api/v1/implementation.ts downloadSignedDocument \u2014 presigned URL TTL not bounded by signer/role",
+  "resolutionType": "New requirement",
+  "description": "downloadSignedDocument returns a presigned S3 URL with the bucket-configured TTL; there is no explicit short TTL enforced per-role (signer vs owner) and no audit log entry on download."
+ },
+ {
+  "id": "O-N14",
+  "severity": "MED",
+  "gapSource": "packages/lib/server-only/field/sign-field-with-token.ts \u2014 Signature row uses base64 image; no image-size cap mentioned in createEnvelopeFields validation",
+  "resolutionType": "New requirement",
+  "description": "Recipient can submit arbitrarily large base64 signature images \u2014 no max-bytes guard at the API boundary. A malicious signer can bloat DB rows and PDF output."
+ },
+ {
+  "id": "O-N15",
+  "severity": "MED",
+  "gapSource": "No log-redaction config visible in packages/lib/logger or comparable; PAPI handlers log error messages directly",
+  "resolutionType": "New requirement",
+  "description": "There is no documented PII / secret redaction policy in logs \u2014 user email addresses, recipient names, and (potentially) signed-field free text can land in operational logs."
+ }
+]

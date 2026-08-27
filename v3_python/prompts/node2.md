@@ -76,6 +76,10 @@ interface Transition {
   annotation: "DISCOVERED" | "PROPOSED" | null;
   // DISCOVERED = found in code but not in event catalogue
   // PROPOSED = needed by gap analysis but not in code
+  evidence: string;              // REQUIRED — code that performs the state write
+                                 // (NOT code that declares the transition legal —
+                                 // see Evidence Contract below)
+  codeLocation: CodeRef;         // file + anchor for the state-write line(s)
 }
 
 interface Gap {
@@ -227,7 +231,7 @@ The validator checks both schema (L1) and transition source/target references (L
   "rootEntity": "[ROOT_ENTITY]",
   "keyFiles": [{"file": "...", "anchor": "..."}],
   "states": [{"name": "...", "type": "atomic", "representation": "...", "location": {...}, "evidence": "..."}],
-  "transitions": [{"source": "...", "target": "...", "eventName": "EventName", "guard": null, "sideEffects": [], "annotation": null}],
+  "transitions": [{"source": "...", "target": "...", "eventName": "EventName", "guard": null, "sideEffects": [], "annotation": null, "evidence": "the actual state-write line(s) you observed (>=10 chars)", "codeLocation": {"file": "...", "anchor": "..."}}],
   "gaps": [{"seq": 1, "severity": "HIGH", "description": "...", "codeLocation": {...}}],
   "trivialLifecycle": false
 }
@@ -275,9 +279,11 @@ Run `ede schema --fragment node2` to regenerate this if the schema changes.
         "eventName": { "minLength": 1, "type": "string" },
         "guard": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
         "sideEffects": { "items": { "type": "string" }, "type": "array" },
-        "annotation": { "anyOf": [{ "enum": ["DISCOVERED", "PROPOSED"] }, { "type": "null" }] }
+        "annotation": { "anyOf": [{ "enum": ["DISCOVERED", "PROPOSED"] }, { "type": "null" }] },
+        "evidence": { "minLength": 10, "type": "string" },
+        "codeLocation": { "$ref": "#/$defs/CodeRef" }
       },
-      "required": ["source", "target", "eventName", "guard", "sideEffects", "annotation"],
+      "required": ["source", "target", "eventName", "guard", "sideEffects", "annotation", "evidence", "codeLocation"],
       "type": "object"
     }
   },

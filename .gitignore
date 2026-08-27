@@ -26,3 +26,8 @@ node_modules/
 
 # Claude Code local settings (per-user, not for VCS)
 .claude/settings.local.json
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/

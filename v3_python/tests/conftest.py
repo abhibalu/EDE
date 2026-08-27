@@ -202,6 +202,8 @@ def node2_data(envelope_data: dict) -> dict:
                         "guard": "valid email token",
                         "sideEffects": ["send welcome email"],
                         "annotation": None,
+                        "evidence": "user.status = 'active' on line 92",
+                        "codeLocation": {"file": "src/services/user/auth.ts", "anchor": "92"},
                     },
                 ],
                 "gaps": [
@@ -243,6 +245,8 @@ def node2_data(envelope_data: dict) -> dict:
                         "guard": None,
                         "sideEffects": [],
                         "annotation": None,
+                        "evidence": "order.status = 'submitted' on line 30",
+                        "codeLocation": {"file": "src/services/order/index.ts", "anchor": "30"},
                     },
                 ],
                 "gaps": [

@@ -215,6 +215,8 @@ def assemble_node2(
                 "guard": t.guard,
                 "sideEffects": t.side_effects,
                 "annotation": t.annotation,
+                "evidence": t.evidence,
+                "codeLocation": {"file": t.code_location.file, "anchor": t.code_location.anchor},
             })
 
         gaps = []

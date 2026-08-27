@@ -46,6 +46,8 @@ class Transition(EdeBaseModel):
     guard: str | None
     side_effects: list[str]
     annotation: TransitionAnnotation | None
+    evidence: str = Field(min_length=10)
+    code_location: CodeRef
 
 
 class Gap(EdeBaseModel):

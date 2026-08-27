@@ -1,0 +1,149 @@
+{
+ "vocabularyVersion": "v0-2026-05-27",
+ "note": "Obstacle-grammar claim types. Stack- and project-independent. Status, operand arity, and required slots live in the type definition, not in external code. Frozen for cross-corpus coverage comparison; bump vocabularyVersion on any change to a type set or a required_slots list.",
+ "slot_names": ["premise", "defeater", "handler_form", "scope"],
+ "types": {
+  "NOT_ATOMIC": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["op_a", "op_b"],
+   "required_slots": [],
+   "description": "two writes that must commit together are not in a single transaction"
+  },
+  "OUTSIDE_TX": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["effect", "tx"],
+   "required_slots": [],
+   "description": "a side effect is dispatched after the transaction commits, with no compensation"
+  },
+  "ERROR_COLLAPSED": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["site", "causes"],
+   "required_slots": ["handler_form"],
+   "description": "distinct failure causes collapse to one opaque value/response; handler_form is required because the literal (.catch(null) no-op vs .catch(()=>null) swallow) is what discriminates a real collapse from a false one"
+  },
+  "NO_WRITER": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["field", "value"],
+   "required_slots": ["scope"],
+   "description": "an enum/field value is declared but never assigned by any code path; scope is required because the claim quantifies over 'nowhere'"
+  },
+  "UNREACHABLE": {
+   "status": "core",
+   "operand_arity": 1,
+   "operands": ["state"],
+   "required_slots": ["scope"],
+   "description": "a state has no inbound transition; scope is required because the claim quantifies over 'nowhere'"
+  },
+  "UNGUARDED": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["transition", "predicate"],
+   "required_slots": [],
+   "description": "a transition lacks a required precondition"
+  },
+  "NO_AUDIT": {
+   "status": "core",
+   "operand_arity": 1,
+   "operands": ["event"],
+   "required_slots": [],
+   "description": "an action leaves no audit record"
+  },
+  "MISSING_OWNERSHIP_CHECK": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["param", "resource"],
+   "required_slots": [],
+   "description": "a resource is acted on without verifying the caller owns it (the IDOR shape)"
+  },
+  "TOCTOU": {
+   "status": "core",
+   "operand_arity": 2,
+   "operands": ["check", "act"],
+   "required_slots": [],
+   "description": "read-then-act without a lock; the check and the act can interleave with a concurrent writer"
+  },
+  "NO_LIFECYCLE_ENFORCEMENT": {
+   "status": "core",
+   "operand_arity": 1,
+   "operands": ["attr"],
+   "required_slots": ["scope"],
+   "description": "a lifecycle attribute (expiry, disabled, retention) is declared but never enforced; scope is required because the claim quantifies over 'nowhere'"
+  },
+  "UNBOUNDED": {
+   "status": "core",
+   "operand_arity": 1,
+   "operands": ["resource"],
+   "required_slots": [],
+   "description": "a resource has no cap, throttle, or maximum size"
+  },
+
+  "MISSING_FILTER": {
+   "status": "candidate",
+   "operand_arity": 2,
+   "operands": ["query", "clause"],
+   "required_slots": ["scope"],
+   "description": "a query lacks a discriminating clause (evidence-level name for an unscoped destructive operation); scope is required because the claim quantifies over 'nowhere'"
+  },
+  "DIFFERENTIAL": {
+   "status": "candidate",
+   "operand_arity": 2,
+   "operands": ["path_a", "path_b"],
+   "required_slots": [],
+   "description": "two paths that should agree produce different artifacts; discharged by running both and diffing, no oracle needed"
+  },
+  "MISSING_WRITE": {
+   "status": "candidate",
+   "operand_arity": 1,
+   "operands": ["missing_op"],
+   "required_slots": [],
+   "description": "a multi-step invariant omits one required write, leaving two facets out of sync"
+  },
+  "MUTABLE_CAPTURE_ACROSS_RETRY": {
+   "status": "candidate",
+   "operand_arity": 2,
+   "operands": ["variable", "tx"],
+   "required_slots": [],
+   "description": "a mutable captured across a retryable transaction can desync from what was persisted"
+  },
+  "FANOUT_SHORT_CIRCUIT": {
+   "status": "candidate",
+   "operand_arity": 1,
+   "operands": ["fanout"],
+   "required_slots": [],
+   "description": "a fan-out uses fail-fast semantics (Promise.all) so one failure drops the remainder"
+  },
+  "ORPHAN_RESOURCE": {
+   "status": "candidate",
+   "operand_arity": 2,
+   "operands": ["resource", "confirmation"],
+   "required_slots": [],
+   "description": "a resource persists with no confirmation edge reconciling it against reality"
+  },
+  "STALE_CREDENTIAL": {
+   "status": "candidate",
+   "operand_arity": 1,
+   "operands": ["credential"],
+   "required_slots": [],
+   "description": "a credential is expired-in-place rather than deleted, leaving hashed secrets in the store"
+  },
+  "PII_IN_LOGS": {
+   "status": "candidate",
+   "operand_arity": 1,
+   "operands": ["sink"],
+   "required_slots": [],
+   "description": "PII or secrets can reach logs with no documented redaction policy"
+  },
+
+  "NONE": {
+   "status": "none",
+   "operand_arity": 0,
+   "operands": [],
+   "required_slots": [],
+   "description": "discharge-resistant: no witness, query, or differential can be stated (code smell, preference, future-risk, or self-defeated). Membership is a mechanical test (can a discharge be stated?), not a judgement"
+  }
+ }
+}
