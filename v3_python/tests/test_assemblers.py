@@ -283,7 +283,7 @@ class TestNode2Assembler:
                 {"name": "Active", "type": "atomic", "representation": "status='active'", "location": {"file": "src/services/user/index.ts", "anchor": "78"}, "evidence": "Prisma enum UserStatus { PENDING ACTIVE }"},
             ],
             "transitions": [
-                {"source": "Pending", "target": "Active", "eventName": "UserActivated", "guard": None, "sideEffects": [], "annotation": None},
+                {"source": "Pending", "target": "Active", "eventName": "UserActivated", "guard": None, "sideEffects": [], "annotation": None, "evidence": "user.status = 'active' on line 92", "codeLocation": {"file": "src/services/user/index.ts", "anchor": "92"}},
             ],
             "gaps": [
                 {"seq": 1, "severity": "MED", "description": "No deactivation path", "codeLocation": {"file": "src/services/user/index.ts", "anchor": "78"}},
