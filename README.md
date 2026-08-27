@@ -82,6 +82,9 @@ ede render --node0 00.json --node1 01.json --node2 02.json --node3 03.json --nod
 
 ## Documentation
 
+[`docs/`](docs/README.md) has an index that routes by the question you're
+asking. The documents themselves:
+
 | Document | What it covers |
 |----------|----------------|
 | [`docs/cli-and-api.md`](docs/cli-and-api.md) | Full CLI and Python API surface |
