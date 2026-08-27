@@ -69,9 +69,25 @@ ede validate --node0 00.json --node1 01.json --node2 02.json --node3 03.json --n
 ede assemble --fragments-dir fragments/node1/ --node 1 --registry-file 00-recon.json --output 01-events.json
 ede schema --node 1
 ede coverage --node0 00-recon.json --node1 01-events.json
+ede verify-paths --repo /path/to/target --node0 00-recon.json
+ede render --node0 00.json --node1 01.json --node2 02.json --node3 03.json --node4 04.json --output SPEC.md
 ```
 
-See [`v3_python/README.md`](v3_python/README.md) for the full CLI/API surface and [`v3_python/ARCHITECTURE_DECISIONS.md`](v3_python/ARCHITECTURE_DECISIONS.md) for the rationale behind the settled design.
+## Documentation
+
+| Document | What it covers |
+|----------|----------------|
+| [`v3_python/README.md`](v3_python/README.md) | Full CLI and Python API surface |
+| [`v3_python/FORMAL_THEORY.md`](v3_python/FORMAL_THEORY.md) | Why the layer split is *forced* rather than chosen — the validation layers mapped onto the Chomsky hierarchy, with termination and decidability arguments |
+| [`v3_python/CONSTRAINT_RULES.md`](v3_python/CONSTRAINT_RULES.md) | The complete rule catalogue and the evidence → requirement traceability chain |
+| [`v3_python/ARCHITECTURE_DECISIONS.md`](v3_python/ARCHITECTURE_DECISIONS.md) | Settled decisions and what was explicitly rejected, with reasons |
+
+The word "grammar" in this repository is not a metaphor. The Pydantic models
+*are* a formal grammar — terminals, nonterminals, production rules, start
+symbol — and `model_validate()` is its parser. L1 is context-free and L2 is
+context-sensitive, which is precisely why L2 cannot be a `@model_validator`: a
+model validator has access only to its own instance. The argument is worked out
+in [`FORMAL_THEORY.md`](v3_python/FORMAL_THEORY.md).
 
 ## Design principles
 
@@ -108,6 +124,12 @@ records to 89 while correctly refusing a predicted fourth merge;
 `phase1_falsification.py` is a pre-registered test that passes only if a wrong
 finding and its source-corrected form differ in a **load-bearing** field rather
 than in prose.
+
+Where [`FORMAL_THEORY.md`](v3_python/FORMAL_THEORY.md) treats the *pipeline* as
+a formal language and asks whether an artifact is well-formed, the obstacle
+grammar asks the next question down: given a well-formed finding, can its truth
+be discharged? The first is a membership problem, the second a falsifiability
+one.
 
 Status: data and analysis only. `ede/grammar/checkers/` is empty by design —
 it fixes the `(claim_type, stack, layer)` keying convention before any checker
