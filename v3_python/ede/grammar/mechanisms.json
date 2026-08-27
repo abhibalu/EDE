@@ -1,0 +1,130 @@
+{
+ "mechanismVersion": "v0-2026-05-27",
+ "note": "Two-layer discharge. evidence_mechanism proves the CODE FACT (cheap: replayable against a baseline commit with no running app, no seeded DB, no fault injection). inference_mechanism proves the HARM FOLLOWS (often expensive: needs a runtime). FP measurement lives at the evidence layer. The claim types are stack-independent; only the concrete checker binding varies, keyed under `stacks` (ts-prisma | php-laravel | py-sqlalchemy).",
+ "evidence_enum": ["AST", "STATIC_QUERY", "RUNTIME", "MODEL_CHECK"],
+ "inference_enum": ["WITNESS", "FAULT_WITNESS", "STATIC_QUERY", "MODEL_CHECK", "DIFFERENTIAL", "NONE"],
+ "types": {
+  "ERROR_COLLAPSED": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "WITNESS",
+   "stacks": {
+    "ts-prisma": "a .catch()/try-catch whose handler discards the rejection reason; literal form is load-bearing (.catch(null) is a no-op, not a swallow)",
+    "php-laravel": "try/catch returning a rewritten response without rethrow",
+    "py-sqlalchemy": "except that passes or returns a sentinel, dropping the exception"
+   }
+  },
+  "NO_AUDIT": {
+   "evidence_mechanism": "STATIC_QUERY",
+   "inference_mechanism": "WITNESS",
+   "stacks": {
+    "ts-prisma": "no *AuditLog.create in the handler's transaction",
+    "php-laravel": "no audit model write / no Event dispatch on the action",
+    "py-sqlalchemy": "no audit-row insert in the unit of work"
+   }
+  },
+  "MISSING_OWNERSHIP_CHECK": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "WITNESS",
+   "stacks": {
+    "ts-prisma": "resolver acts on a child id without a where-clause tying it to the authorised parent",
+    "php-laravel": "no policy/gate binding the route parameter to the actor",
+    "py-sqlalchemy": "query filters by resource id only, not by owner"
+   }
+  },
+  "UNBOUNDED": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "WITNESS"
+  },
+  "NO_LIFECYCLE_ENFORCEMENT": {
+   "evidence_mechanism": "STATIC_QUERY",
+   "inference_mechanism": "WITNESS"
+  },
+  "NOT_ATOMIC": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "FAULT_WITNESS",
+   "stacks": {
+    "ts-prisma": "two writes not wrapped in prisma.$transaction(cb)",
+    "php-laravel": "writes outside DB::transaction()",
+    "py-sqlalchemy": "writes spanning a commit boundary / not in one session.begin()"
+   }
+  },
+  "OUTSIDE_TX": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "FAULT_WITNESS",
+   "stacks": {
+    "ts-prisma": "side effect dispatched after prisma.$transaction resolves",
+    "php-laravel": "job/mail dispatched after DB::transaction() returns (not afterCommit-guarded)",
+    "py-sqlalchemy": "side effect after session.commit()"
+   }
+  },
+  "NO_WRITER": {
+   "evidence_mechanism": "STATIC_QUERY",
+   "inference_mechanism": "STATIC_QUERY"
+  },
+  "UNREACHABLE": {
+   "evidence_mechanism": "STATIC_QUERY",
+   "inference_mechanism": "STATIC_QUERY"
+  },
+  "UNGUARDED": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "STATIC_QUERY"
+  },
+  "MISSING_FILTER": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "STATIC_QUERY",
+   "stacks": {
+    "ts-prisma": "deleteMany/updateMany with a where-clause missing a discriminating column",
+    "php-laravel": "Eloquent mass delete/update without the guarding scope",
+    "py-sqlalchemy": "bulk delete()/update() query missing a filter clause"
+   }
+  },
+  "TOCTOU": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "MODEL_CHECK",
+   "stacks": {
+    "ts-prisma": "a read used as a guard for a later write with no row lock / unique constraint between them",
+    "php-laravel": "check then act without lockForUpdate()",
+    "py-sqlalchemy": "read-then-write without with_for_update()"
+   }
+  },
+  "DIFFERENTIAL": {
+   "evidence_mechanism": "RUNTIME",
+   "inference_mechanism": "DIFFERENTIAL"
+  },
+  "MISSING_WRITE": {
+   "evidence_mechanism": "AST",
+   "inference_mechanism": "FAULT_WITNESS"
+  },
+
+  "MUTABLE_CAPTURE_ACROSS_RETRY": {
+   "evidence_mechanism": null,
+   "inference_mechanism": null,
+   "note": "candidate type — mechanism undetermined until the falsification test admits it"
+  },
+  "FANOUT_SHORT_CIRCUIT": {
+   "evidence_mechanism": null,
+   "inference_mechanism": null,
+   "note": "candidate type — mechanism undetermined"
+  },
+  "ORPHAN_RESOURCE": {
+   "evidence_mechanism": null,
+   "inference_mechanism": null,
+   "note": "candidate type — mechanism undetermined"
+  },
+  "STALE_CREDENTIAL": {
+   "evidence_mechanism": null,
+   "inference_mechanism": null,
+   "note": "candidate type — mechanism undetermined"
+  },
+  "PII_IN_LOGS": {
+   "evidence_mechanism": null,
+   "inference_mechanism": null,
+   "note": "candidate type — mechanism undetermined"
+  },
+
+  "NONE": {
+   "evidence_mechanism": null,
+   "inference_mechanism": "NONE"
+  }
+ }
+}
