@@ -1,0 +1,73 @@
+{
+ "test": "phase1-grammar-falsification",
+ "case": "PAPI-G2",
+ "result": "PASS",
+ "load_bearing_fields_that_differ": [
+  "premise",
+  "observable",
+  "discharge_condition"
+ ],
+ "load_bearing_fields_identical": [
+  "claim_type",
+  "site",
+  "operands",
+  "handler_form"
+ ],
+ "quarantined_fields_that_differ": [
+  "narrative",
+  "severity_rationale",
+  "confidence"
+ ],
+ "content_address_wrong": "41c49145ec99",
+ "content_address_corrected": "41c49145ec99",
+ "same_finding_by_content_address": true,
+ "records": {
+  "wrong": {
+   "claim_type": "ERROR_COLLAPSED",
+   "site": "api/v1:updateRecipient/updateEnvelopeRecipients",
+   "operands": {
+    "site": "updateRecipient",
+    "causes": [
+     "auth",
+     "conflict",
+     "db",
+     "validation"
+    ]
+   },
+   "handler_form": ".catch(null)",
+   "premise": ".catch(null) attaches null as the onRejected handler, swallowing the rejection and dropping its reason",
+   "observable": "HTTP 404 'Recipient not found'",
+   "discharge_condition": "WITNESS: stub updateEnvelopeRecipients to reject; assert response is 404 that masks the true cause",
+   "narrative": "updateRecipient swallows errors via .catch(null) then reports 404 for any failure cause",
+   "severity_rationale": "HIGH \u2014 all failure causes collapse to one opaque client response",
+   "confidence": "inferred"
+  },
+  "corrected": {
+   "claim_type": "ERROR_COLLAPSED",
+   "site": "api/v1:updateRecipient/updateEnvelopeRecipients",
+   "operands": {
+    "site": "updateRecipient",
+    "causes": [
+     "auth",
+     "conflict",
+     "db",
+     "validation"
+    ]
+   },
+   "handler_form": ".catch(null)",
+   "premise": "per Promise semantics a non-function passed to .catch attaches NO rejection handler; the rejection PROPAGATES uncaught to the tRPC error middleware",
+   "observable": "HTTP 401 (middleware maps the uncaught rejection to an auth error)",
+   "discharge_condition": "WITNESS: stub updateEnvelopeRecipients to reject; assert response is 401, NOT 404",
+   "narrative": "the .catch(null) is a no-op typo for .catch(()=>null); failures surface as 401 via middleware, not a masked 404",
+   "severity_rationale": "HIGH \u2014 real defect (auth-shaped error for non-auth failures) but the emitted mechanism is inverted",
+   "confidence": "observed"
+  }
+ },
+ "findings": [
+  "Grammar PASSES: wrong and corrected differ in load-bearing fields (premise, observable, discharge_condition), not merely prose.",
+  "handler_form is IDENTICAL in both \u2014 the source literal is ground truth; it does NOT discriminate wrong-vs-corrected.",
+  "The discriminators are premise and observable. => observable must be promoted to its OWN load-bearing slot (Phase 0 folded it into consequence_claim).",
+  "Content address is IDENTICAL in both: the grammar treats them as the SAME finding. Correct \u2014 one defect, described wrongly then rightly.",
+  "Therefore the DISCHARGE (401 vs 404 witness) is the adjudicator of which premise is true \u2014 the test is the identity function, exactly as the thesis claims."
+ ]
+}

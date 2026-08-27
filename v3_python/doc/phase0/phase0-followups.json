@@ -1,0 +1,121 @@
+{
+ "unguarded_test": {
+  "baseline_premise_absent_pct": 0.913,
+  "unguarded_premise_absent": [
+   13,
+   13
+  ],
+  "error_collapsed_premise_absent": [
+   11,
+   13
+  ]
+ },
+ "smell_retest": {
+  "O-AUTH-5": {
+   "mechanism": "STATIC_QUERY",
+   "scope": "repo",
+   "discharge_statement": "query: call sites of verifyEmail that don't branch on the sentinel return",
+   "verdict": "COMES_BACK"
+  },
+  "O-AUTH-7": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "'audit analysis brittle' \u2014 no wrong output; two events are distinguishable via isRevoke",
+   "verdict": "RESISTANT"
+  },
+  "O-ENV-9": {
+   "mechanism": "DIFFERENTIAL",
+   "scope": null,
+   "discharge_statement": "same DOCUMENT_CANCELLED webhook fires for never-sent-draft vs in-flight-cancel \u2014 diff the two paths",
+   "verdict": "COMES_BACK"
+  },
+  "O-JOB-2": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "completedAt set on FAILED too \u2014 but status distinguishes; no wrong behaviour (plan predicted death)",
+   "verdict": "RESISTANT"
+  },
+  "O-JOB-3": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "WHERE status=PENDING guard is correct; 'fragile reasoning' is a preference",
+   "verdict": "RESISTANT"
+  },
+  "O-JOB-11": {
+   "mechanism": "STATIC_QUERY",
+   "scope": "file",
+   "discharge_statement": "query: retry path emits no structured log/metric \u2014 but a console.log DOES exist",
+   "verdict": "BORDERLINE"
+  },
+  "O-ORG-5": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "code narrows to data:{name}; current behaviour correct, risk is a future contributor",
+   "verdict": "RESISTANT"
+  },
+  "O-ORG-6": {
+   "mechanism": "STATIC_QUERY",
+   "scope": "file",
+   "discharge_statement": "query: FolderUpdated payload carries no changed-dimension discriminator",
+   "verdict": "BORDERLINE"
+  },
+  "O-ORG-7": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "self-defeated: 'user-visible behaviour is correct' (defeater present in text)",
+   "verdict": "RESISTANT"
+  },
+  "O-ORG-8": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "fixed 7500ms timeout works; 'not configurable' is a preference",
+   "verdict": "RESISTANT"
+  },
+  "O-SIGN-5": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "observability of which cascade level supplied config; no wrong output",
+   "verdict": "RESISTANT"
+  },
+  "O-SIGN-8": {
+   "mechanism": "WITNESS",
+   "scope": null,
+   "discharge_statement": "construct a read-only field whose default defeats the match-on-meta heuristic; assert mis-sign",
+   "verdict": "BORDERLINE"
+  },
+  "O-TRPC-5": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "self-declared 'code smell, not a state-machine gap' (defeater present)",
+   "verdict": "RESISTANT"
+  },
+  "O-TRPC-10": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "dispatcher/resender schema-coupling; future-change risk, no current failure",
+   "verdict": "RESISTANT"
+  },
+  "O-TRPC-11": {
+   "mechanism": null,
+   "scope": null,
+   "discharge_statement": "JSON-shaped polymorphism; type-system smell, no current failure",
+   "verdict": "RESISTANT"
+  },
+  "O-N8": {
+   "mechanism": "STATIC_QUERY",
+   "scope": "repo",
+   "discharge_statement": "query: no admin route lists WebhookCall rows with status=FAILED (dead-letter absence)",
+   "verdict": "COMES_BACK"
+  }
+ },
+ "recoveries_firm": [
+  "O-AUTH-5",
+  "O-ENV-9",
+  "O-N8"
+ ],
+ "recoveries_borderline": [
+  "O-JOB-11",
+  "O-ORG-6",
+  "O-SIGN-8"
+ ]
+}

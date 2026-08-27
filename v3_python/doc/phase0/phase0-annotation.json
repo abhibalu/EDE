@@ -1,0 +1,2424 @@
+{
+ "pipelineVersion": "0.1.0",
+ "phase": 0,
+ "run": "2026-05-27",
+ "project": "documenso",
+ "source": "docs/pipeline/runs/2026-05-27/03-goals.json",
+ "schemaVersion": "grammar-v0-slots7",
+ "totals": {
+  "records": 92,
+  "real": 76,
+  "discharge_resistant": 16,
+  "distinct_after_dedup": 89
+ },
+ "records": [
+  {
+   "id": "O-AUTH-1",
+   "severity": "HIGH",
+   "gapSource": "AUTH-G1",
+   "calibration": true,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "forgotPassword,[emailSendFail]",
+    "mechanism": "WITNESS",
+    "handler_form": ".catch(console.error)",
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-2",
+   "severity": "MED",
+   "gapSource": "AUTH-G2",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "createUser,[personalOrgCreateFail]",
+    "mechanism": "WITNESS",
+    "handler_form": ".catch(console.error)",
+    "scope": null,
+    "secondaries": [
+     "NOT_ATOMIC"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "breaking the GUARANTEE that every new user has a workspace",
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-3",
+   "severity": "MED",
+   "gapSource": "AUTH-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_AUDIT",
+    "operands": "csrfMismatch",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "comment_acknowledged"
+   ]
+  },
+  {
+   "id": "O-AUTH-4",
+   "severity": "LOW",
+   "gapSource": "AUTH-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "oauthLink,preserveExistingPassword",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "vocab_misfit",
+    "comment_acknowledged",
+    "future_risk"
+   ]
+  },
+  {
+   "id": "O-AUTH-5",
+   "severity": "LOW",
+   "gapSource": "AUTH-G5",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "verifyEmail-sentinel-return",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "would"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "would"
+    ]
+   },
+   "flags": [
+    "discharge_resistant",
+    "hypothetical"
+   ]
+  },
+  {
+   "id": "O-AUTH-6",
+   "severity": "HIGH",
+   "gapSource": "AUTH-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "MUTABLE_CAPTURE_ACROSS_RETRY",
+    "operands": "recoveryCodes,prisma.$transaction",
+    "mechanism": "UNKNOWN",
+    "handler_form": "outer `let`",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if",
+     "may",
+     "could"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "could",
+     "if",
+     "may"
+    ]
+   },
+   "flags": [
+    "vocab_new_candidate",
+    "hedge_x_high"
+   ]
+  },
+  {
+   "id": "O-AUTH-7",
+   "severity": "LOW",
+   "gapSource": "AUTH-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "invalidateSessions-isRevoke-flag-overload",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "overloaded_encoding"
+   ]
+  },
+  {
+   "id": "O-AUTH-8",
+   "severity": "HIGH",
+   "gapSource": "AUTH-G8",
+   "calibration": false,
+   "grammar": {
+    "primary": "OUTSIDE_TX",
+    "operands": "invalidateSessions,passwordChangeTx",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "IMPLICIT",
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-9",
+   "severity": "MED",
+   "gapSource": "AUTH-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_AUDIT",
+    "operands": "sessionExpiry",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-10",
+   "severity": "CRITICAL",
+   "gapSource": "AUTH-G10",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "User.disabled",
+    "mechanism": "WITNESS",
+    "handler_form": "validateSessionToken does not check User.disabled",
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": "effectively never-logged-out",
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-11",
+   "severity": "MED",
+   "gapSource": "AUTH-G11",
+   "calibration": true,
+   "grammar": {
+    "primary": "NOT_ATOMIC",
+    "operands": "Session.create,UserSecurityAuditLog.create",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": "two separate prisma.create calls",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "IMPLICIT",
+    "defeater": null,
+    "hedge": [
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-12",
+   "severity": "HIGH",
+   "gapSource": "AUTH-G12",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNBOUNDED",
+    "operands": "sessionLifetime",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": "effective session lifetime is unbounded",
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-AUTH-13",
+   "severity": "HIGH",
+   "gapSource": "AUTH-G13",
+   "calibration": false,
+   "grammar": {
+    "primary": "TOCTOU",
+    "operands": "expiryCheck,challengeDelete",
+    "mechanism": "MODEL_CHECK",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": "this is good for replay protection, but if the order were reversed the challenge could be reused",
+    "hedge": [
+     "if",
+     "could"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "could",
+     "if"
+    ]
+   },
+   "flags": [
+    "mixed_claim",
+    "defeater_present"
+   ]
+  },
+  {
+   "id": "O-ENV-1",
+   "severity": "CRITICAL",
+   "gapSource": "ENV-G1",
+   "calibration": true,
+   "grammar": {
+    "primary": "TOCTOU",
+    "operands": "haveAllRecipientsSigned,enqueueSeal",
+    "mechanism": "MODEL_CHECK",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "executed AFTER the transaction commits and outside any lock",
+    "defeater": "UNCAPTURED",
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "defeater_uncaptured",
+    "canary_class"
+   ]
+  },
+  {
+   "id": "O-ENV-2",
+   "severity": "CRITICAL",
+   "gapSource": "ENV-G2",
+   "calibration": true,
+   "grammar": {
+    "primary": "MISSING_FILTER",
+    "operands": "deleteMany,statusClause",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "prisma.envelope.deleteMany({ where: { teamId } })",
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": "O-ORG-11"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": "irreversibly ... There is no recovery path",
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "dup_candidate"
+   ]
+  },
+  {
+   "id": "O-ENV-3",
+   "severity": "HIGH",
+   "gapSource": "ENV-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "NOT_ATOMIC",
+    "operands": "recipient.signingStatus,envelope.status",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "an impossible-looking state",
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ENV-4",
+   "severity": "HIGH",
+   "gapSource": "ENV-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "delete,isDocumentCompletedGate",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "isDocumentCompleted(envelope.status)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": "no recovery ... no trash/restore",
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ENV-5",
+   "severity": "HIGH",
+   "gapSource": "ENV-G5",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "sealJob,statusGuardAtRunTop",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if",
+     "could",
+     "in principle"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "could",
+     "if",
+     "in principle"
+    ]
+   },
+   "flags": [
+    "hypothetical",
+    "hedge_x_high"
+   ]
+  },
+  {
+   "id": "O-ENV-6",
+   "severity": "MED",
+   "gapSource": "ENV-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "TOCTOU",
+    "operands": "attachmentAdd,sealCommit",
+    "mechanism": "MODEL_CHECK",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ENV-7",
+   "severity": "MED",
+   "gapSource": "ENV-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_AUDIT",
+    "operands": "templateEnvelopeMutations",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ENV-8",
+   "severity": "MED",
+   "gapSource": "ENV-G8",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "EnvelopeItemPdfReplaced,[fieldCoordRefetchFail]",
+    "mechanism": "WITNESS",
+    "handler_form": "console.error(err)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ENV-9",
+   "severity": "LOW",
+   "gapSource": "ENV-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "DOCUMENT_CANCELLED-event-overload",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "overloaded_encoding"
+   ]
+  },
+  {
+   "id": "O-JOB-1",
+   "severity": "HIGH",
+   "gapSource": "JOB-G1",
+   "calibration": true,
+   "grammar": {
+    "primary": "NO_WRITER",
+    "operands": "BackgroundJobTaskStatus,FAILED",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": "repo",
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-JOB-2",
+   "severity": "LOW",
+   "gapSource": "JOB-G2",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "completedAt-overload-terminal-states",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "overloaded_encoding"
+   ]
+  },
+  {
+   "id": "O-JOB-3",
+   "severity": "MED",
+   "gapSource": "JOB-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "implicit-where-clause-guard",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "behaviour_correct"
+   ]
+  },
+  {
+   "id": "O-JOB-4",
+   "severity": "HIGH",
+   "gapSource": "JOB-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "OUTSIDE_TX",
+    "operands": "triggerWebhook,sealTx",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-JOB-5",
+   "severity": "HIGH",
+   "gapSource": "JOB-G5",
+   "calibration": false,
+   "grammar": {
+    "primary": "OUTSIDE_TX",
+    "operands": "sendMail,reminderMarkTx",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": [
+    "hedge_x_high"
+   ]
+  },
+  {
+   "id": "O-JOB-6",
+   "severity": "MED",
+   "gapSource": "JOB-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "NOT_ATOMIC",
+    "operands": "sendMail,recipient.update(SENT)",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": "two separate io.runTask steps",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-JOB-7",
+   "severity": "MED",
+   "gapSource": "JOB-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "FANOUT_SHORT_CIRCUIT",
+    "operands": "completedEmailFanout",
+    "mechanism": "UNKNOWN",
+    "handler_form": "Promise.all",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "vocab_new_candidate"
+   ]
+  },
+  {
+   "id": "O-JOB-8",
+   "severity": "HIGH",
+   "gapSource": "JOB-G8",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "submitJobToEndpoint,[networkFail,non200,slowTarget]",
+    "mechanism": "WITNESS",
+    "handler_form": "fetch().catch(()=>null)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-JOB-9",
+   "severity": "MED",
+   "gapSource": "JOB-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "triggerWebhook,[perWebhookTriggerFail]",
+    "mechanism": "WITNESS",
+    "handler_form": "'Failed to trigger webhook' Error",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-JOB-10",
+   "severity": "MED",
+   "gapSource": "JOB-G10",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "executeWebhookCall,[networkTimeout,DNS,TLS,malformed]",
+    "mechanism": "WITNESS",
+    "handler_form": "responseCode=0",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-JOB-11",
+   "severity": "LOW",
+   "gapSource": "JOB-G11",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "console.log-only-retry-logging",
+    "mechanism": null,
+    "handler_form": "console.log(...)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "observability_quality"
+   ]
+  },
+  {
+   "id": "O-ORG-1",
+   "severity": "HIGH",
+   "gapSource": "ORG-G1",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "createOrganisation,[stripeCustomerCreateFail]",
+    "mechanism": "WITNESS",
+    "handler_form": "catch returns undefined",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "comment_acknowledged"
+   ]
+  },
+  {
+   "id": "O-ORG-2",
+   "severity": "CRITICAL",
+   "gapSource": "ORG-G2",
+   "calibration": false,
+   "grammar": {
+    "primary": "NOT_ATOMIC",
+    "operands": "addUserToOrganisation,invite.update",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ORG-3",
+   "severity": "HIGH",
+   "gapSource": "ORG-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "OUTSIDE_TX",
+    "operands": "emailDispatch,dbTx",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ORG-4",
+   "severity": "HIGH",
+   "gapSource": "ORG-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_WRITER",
+    "operands": "OrganisationMemberInviteStatus,DECLINED",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "status: { not: DECLINED }",
+    "scope": "surface",
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "scope_limited"
+   ]
+  },
+  {
+   "id": "O-ORG-5",
+   "severity": "MED",
+   "gapSource": "ORG-G5",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "invariant-by-comment-only",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "future_risk",
+    "comment_acknowledged"
+   ]
+  },
+  {
+   "id": "O-ORG-6",
+   "severity": "LOW",
+   "gapSource": "ORG-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "FolderUpdated-event-overload",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "overloaded_encoding"
+   ]
+  },
+  {
+   "id": "O-ORG-7",
+   "severity": "MED",
+   "gapSource": "ORG-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "pre-read+P2002-redundant",
+    "mechanism": null,
+    "handler_form": "findFirst",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": "the user-visible behaviour is correct",
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "behaviour_correct",
+    "defeater_present"
+   ]
+  },
+  {
+   "id": "O-ORG-8",
+   "severity": "LOW",
+   "gapSource": "ORG-G8",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "hardcoded-7500ms-timeout",
+    "mechanism": null,
+    "handler_form": "7500 ms",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "magic_number"
+   ]
+  },
+  {
+   "id": "O-ORG-9",
+   "severity": "LOW",
+   "gapSource": "ORG-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "TOCTOU",
+    "operands": "ancestorWalk,reparent",
+    "mechanism": "MODEL_CHECK",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [
+     "perf_Odepth"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ORG-10",
+   "severity": "MED",
+   "gapSource": "ORG-G10",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "DocumentShareLink.expiry",
+    "mechanism": "WITNESS",
+    "handler_form": "update: {}",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-ORG-11",
+   "severity": "CRITICAL",
+   "gapSource": "ORG-G11",
+   "calibration": false,
+   "grammar": {
+    "primary": "MISSING_FILTER",
+    "operands": "deleteMany,statusClause",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "prisma.envelope.deleteMany({ where: { teamId } })",
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": "O-ENV-2"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": "silent destructive data loss",
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "dup_candidate"
+   ]
+  },
+  {
+   "id": "O-ORG-12",
+   "severity": "HIGH",
+   "gapSource": "ORG-G12",
+   "calibration": false,
+   "grammar": {
+    "primary": "MISSING_WRITE",
+    "operands": "demotePreviousOwner",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": "O-TRPC-3"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "may",
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if",
+     "may"
+    ]
+   },
+   "flags": [
+    "vocab_new_candidate",
+    "dup_candidate",
+    "hedge_x_high"
+   ]
+  },
+  {
+   "id": "O-PAPI-1",
+   "severity": "HIGH",
+   "gapSource": "PAPI-G1",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "v1Handlers,[auth,validation,S3,DB,quota]",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": "package",
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": "observability of failures is destroyed",
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "error_swallow_sibling"
+   ]
+  },
+  {
+   "id": "O-PAPI-2",
+   "severity": "HIGH",
+   "gapSource": "PAPI-G2",
+   "calibration": true,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "updateRecipient,[auth,DB,conflict,validation]",
+    "mechanism": "WITNESS",
+    "handler_form": ".catch(null)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "The .catch(null) idiom drops the rejection reason entirely",
+    "defeater": "UNCAPTURED",
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "canary",
+    "mischaracterized_known",
+    "defeater_uncaptured",
+    "error_swallow_sibling"
+   ]
+  },
+  {
+   "id": "O-PAPI-3",
+   "severity": "CRITICAL",
+   "gapSource": "PAPI-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "templateRecipientRemap,keyValidation",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "template.recipients.at(i)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "comment_acknowledged",
+    "index_coupling"
+   ]
+  },
+  {
+   "id": "O-PAPI-4",
+   "severity": "HIGH",
+   "gapSource": "PAPI-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "DIFFERENTIAL",
+    "operands": "v1CreateField,serviceCreateField",
+    "mechanism": "DIFFERENTIAL",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "differential"
+   ]
+  },
+  {
+   "id": "O-PAPI-5",
+   "severity": "CRITICAL",
+   "gapSource": "PAPI-G5",
+   "calibration": true,
+   "grammar": {
+    "primary": "MISSING_OWNERSHIP_CHECK",
+    "operands": "documentId,fieldId",
+    "mechanism": "WITNESS",
+    "handler_form": "deleteDocumentField(fieldId only)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "comment_acknowledged"
+   ]
+  },
+  {
+   "id": "O-PAPI-6",
+   "severity": "HIGH",
+   "gapSource": "PAPI-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "MISSING_OWNERSHIP_CHECK",
+    "operands": "documentId,recipientId",
+    "mechanism": "WITNESS",
+    "handler_form": "deleteEnvelopeRecipient(recipientId only)",
+    "scope": null,
+    "secondaries": [
+     "DATA_CORRUPTION:auditUser.email=team.name"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "multi_defect"
+   ]
+  },
+  {
+   "id": "O-PAPI-7",
+   "severity": "MED",
+   "gapSource": "PAPI-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "uploadEndpoints,[uploadTransportConfig]",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "error_swallow_sibling",
+    "mechanism_unbacked"
+   ]
+  },
+  {
+   "id": "O-PAPI-8",
+   "severity": "HIGH",
+   "gapSource": "PAPI-G8",
+   "calibration": false,
+   "grammar": {
+    "primary": "ORPHAN_RESOURCE",
+    "operands": "envelope,uploadConfirmation",
+    "mechanism": "UNKNOWN",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": [
+    "vocab_new_candidate"
+   ]
+  },
+  {
+   "id": "O-PAPI-9",
+   "severity": "MED",
+   "gapSource": "PAPI-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "sendDocument,idempotency",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "vocab_misfit",
+    "hidden_side_effect"
+   ]
+  },
+  {
+   "id": "O-PAPI-10",
+   "severity": "HIGH",
+   "gapSource": "PAPI-G10",
+   "calibration": false,
+   "grammar": {
+    "primary": "NOT_ATOMIC",
+    "operands": "envelope.create,authOptions.update",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": "follow-up prisma.envelope.update",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if"
+    ],
+    "severity_rationale": "a security-relevant partial-failure state",
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-1",
+   "severity": "HIGH",
+   "gapSource": "SIGN-G1",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "ccRecipientCreate,signingStateTraversal",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "vocab_misfit",
+    "overloaded_encoding"
+   ]
+  },
+  {
+   "id": "O-SIGN-2",
+   "severity": "HIGH",
+   "gapSource": "SIGN-G2",
+   "calibration": false,
+   "grammar": {
+    "primary": "TOCTOU",
+    "operands": "recipientStatusRead,recipientUpdate",
+    "mechanism": "MODEL_CHECK",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": "no compare-and-swap guard",
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": "lost-update race",
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-3",
+   "severity": "MED",
+   "gapSource": "SIGN-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_WRITER",
+    "operands": "Recipient.status,EXPIRED",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-4",
+   "severity": "MED",
+   "gapSource": "SIGN-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "assistantPrefill,[blockedGuard,actualNotFound]",
+    "mechanism": "WITNESS",
+    "handler_form": "findFirstOrThrow",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-5",
+   "severity": "LOW",
+   "gapSource": "SIGN-G5",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "reminder-cascade-implicit",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": "O-N10"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "dup_candidate",
+    "observability_quality"
+   ]
+  },
+  {
+   "id": "O-SIGN-6",
+   "severity": "MED",
+   "gapSource": "SIGN-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_AUDIT",
+    "operands": "FieldUninserted",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-7",
+   "severity": "HIGH",
+   "gapSource": "SIGN-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "OUTSIDE_TX",
+    "operands": "pdfWhiteout,fieldTx",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-8",
+   "severity": "LOW",
+   "gapSource": "SIGN-G8",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "readonly-field-match-on-meta-hack",
+    "mechanism": null,
+    "handler_form": "HACK comment sign-field-with-token.ts:212",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "comment_acknowledged"
+   ]
+  },
+  {
+   "id": "O-SIGN-9",
+   "severity": "MED",
+   "gapSource": "SIGN-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "TOCTOU",
+    "operands": "singletonCheck,singletonAssign",
+    "mechanism": "MODEL_CHECK",
+    "handler_form": "// eslint-disable require-atomic-updates",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "could"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "could"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-10",
+   "severity": "HIGH",
+   "gapSource": "SIGN-G10",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "signingTransport,prodCertGuard",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "./example/cert.p12",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "can"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-SIGN-11",
+   "severity": "MED",
+   "gapSource": "SIGN-G11",
+   "calibration": false,
+   "grammar": {
+    "primary": "OUTSIDE_TX",
+    "operands": "notificationEmail,deleteTx",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if",
+     "may"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-TRPC-1",
+   "severity": "HIGH",
+   "gapSource": "TRPC-G1",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "verifyEmbeddingPresignToken,[expired,revoked,malformed,transientDB]",
+    "mechanism": "WITNESS",
+    "handler_form": ".catch(() => null)",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "error_swallow_sibling"
+   ]
+  },
+  {
+   "id": "O-TRPC-2",
+   "severity": "MED",
+   "gapSource": "TRPC-G2",
+   "calibration": false,
+   "grammar": {
+    "primary": "ERROR_COLLAPSED",
+    "operands": "createEmbeddingPresignToken,[nonAppErrors]",
+    "mechanism": "WITNESS",
+    "handler_form": "AppError(UNKNOWN_ERROR,...)",
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "error_swallow_sibling"
+   ]
+  },
+  {
+   "id": "O-TRPC-3",
+   "severity": "HIGH",
+   "gapSource": "TRPC-G3",
+   "calibration": false,
+   "grammar": {
+    "primary": "MISSING_WRITE",
+    "operands": "demotePreviousOwner",
+    "mechanism": "FAULT_WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": "O-ORG-12"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "may"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "may"
+    ]
+   },
+   "flags": [
+    "vocab_new_candidate",
+    "dup_candidate"
+   ]
+  },
+  {
+   "id": "O-TRPC-4",
+   "severity": "MED",
+   "gapSource": "TRPC-G4",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_AUDIT",
+    "operands": "createWebhook",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "differential_sibling"
+   ]
+  },
+  {
+   "id": "O-TRPC-5",
+   "severity": "LOW",
+   "gapSource": "TRPC-G5",
+   "calibration": true,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "resetTwoFactor-inline-router",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": "Code smell, not a state-machine gap",
+    "hedge": [
+     "would"
+    ],
+    "severity_rationale": "Code smell, not a state-machine gap",
+    "hedge_mechanical": [
+     "would"
+    ]
+   },
+   "flags": [
+    "discharge_resistant",
+    "self_declared_smell",
+    "defeater_present"
+   ]
+  },
+  {
+   "id": "O-TRPC-6",
+   "severity": "HIGH",
+   "gapSource": "TRPC-G6",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "deleteUser,confirmationToken",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": "permanently removes a user and all cascaded rows",
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-TRPC-7",
+   "severity": "MED",
+   "gapSource": "TRPC-G7",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "embedAuthoring,planFlagCheck",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": "IS_BILLING_ENABLED()",
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "id": "O-TRPC-8",
+   "severity": "HIGH",
+   "gapSource": "TRPC-G8",
+   "calibration": true,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "ApiToken.expires",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": "package",
+    "secondaries": [],
+    "dup_of": "O-N6"
+   },
+   "slots": {
+    "premise": "Enforcement is entirely deferred to whichever downstream call site invokes getApiTokenByToken",
+    "defeater": "Enforcement is entirely deferred to ... getApiTokenByToken",
+    "hedge": [
+     "may",
+     "if"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if",
+     "may"
+    ]
+   },
+   "flags": [
+    "scope_caveat",
+    "dup_candidate",
+    "defeater_present",
+    "hedge_x_high"
+   ]
+  },
+  {
+   "id": "O-TRPC-9",
+   "severity": "MED",
+   "gapSource": "TRPC-G9",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "resendWebhookCall,idempotencyKey",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "no_idempotency"
+   ]
+  },
+  {
+   "id": "O-TRPC-10",
+   "severity": "LOW",
+   "gapSource": "TRPC-G10",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "dispatcher-resender-schema-coupling",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "comment_acknowledged"
+   ]
+  },
+  {
+   "id": "O-TRPC-11",
+   "severity": "LOW",
+   "gapSource": "TRPC-G11",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "duplicateEnvelope-json-polymorphism",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "type_system_smell"
+   ]
+  },
+  {
+   "id": "O-N1",
+   "severity": "HIGH",
+   "gapSource": "packages/api/v1/implementation.ts \u2014 no idempotency-key header support on POST /api/v1/documents or POST /:id/send",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "v1Mutations,idempotencyKey",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": "surface",
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "no_idempotency"
+   ]
+  },
+  {
+   "id": "O-N2",
+   "severity": "HIGH",
+   "gapSource": "packages/prisma/schema.prisma Envelope model has no retention policy fields; no scheduled job in packages/lib/jobs/definitions for envelope archival",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "envelope.retention",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": "repo",
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "no_retention"
+   ]
+  },
+  {
+   "id": "O-N3",
+   "severity": "HIGH",
+   "gapSource": "packages/signing/index.ts getSigner \u2014 no key-rotation hook; module-level mutable singleton holds the active signer",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "signingKey.rotation",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "may"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "may"
+    ]
+   },
+   "flags": [
+    "hedge_x_high"
+   ]
+  },
+  {
+   "id": "O-N4",
+   "severity": "MED",
+   "gapSource": "packages/lib/server-only/webhooks/trigger/trigger-webhook.ts \u2014 payload is signed with HMAC but no replay-protection timestamp window enforced on receiver side, no documentation",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "webhookReceiver,replayProtection",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "receiver_side_scope"
+   ]
+  },
+  {
+   "id": "O-N5",
+   "severity": "MED",
+   "gapSource": "packages/lib/server-only/recipient/create-envelope-recipients.ts \u2014 no per-recipient rate limit on resend; resend-document.ts iterates without throttle",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNBOUNDED",
+    "operands": "reminderResend",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-N6",
+   "severity": "HIGH",
+   "gapSource": "packages/prisma/schema.prisma ApiToken.expires; no service/cron filters by expires",
+   "calibration": true,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "ApiToken.expires",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": "repo",
+    "secondaries": [],
+    "dup_of": "O-TRPC-8"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "may"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "may"
+    ]
+   },
+   "flags": [
+    "dup_candidate"
+   ]
+  },
+  {
+   "id": "O-N7",
+   "severity": "MED",
+   "gapSource": "packages/lib/server-only/organisation/create-organisation-member-invites.ts \u2014 VerificationToken.expires set to 1 hour for password reset but invite tokens use cuid with no expiry",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_LIFECYCLE_ENFORCEMENT",
+    "operands": "invite.expiry",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "no_expiry"
+   ]
+  },
+  {
+   "id": "O-N8",
+   "severity": "MED",
+   "gapSource": "packages/lib/server-only/webhooks/trigger/trigger-webhook.ts; packages/lib/jobs/definitions/internal/execute-webhook.handler.ts \u2014 no dead-letter queue, no admin UI to inspect failed WebhookCalls",
+   "calibration": false,
+   "grammar": {
+    "primary": "NONE",
+    "operands": "no-dead-letter-admin-tooling",
+    "mechanism": null,
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "discharge_resistant",
+    "ops_gap"
+   ]
+  },
+  {
+   "id": "O-N9",
+   "severity": "HIGH",
+   "gapSource": "packages/api/v1/implementation.ts createDocumentFromTemplate \u2014 no validation that template.userId/teamId === requester",
+   "calibration": false,
+   "grammar": {
+    "primary": "MISSING_OWNERSHIP_CHECK",
+    "operands": "caller.team,template",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-N10",
+   "severity": "LOW",
+   "gapSource": "packages/lib/server-only/recipient/update-recipient-next-reminder.ts; reminderSettings JSON in DocumentMeta \u2014 no upper bound, no clamping; comments mention 3-level cascade",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNGUARDED",
+    "operands": "reminderCascade,jsonSchemaValidation",
+    "mechanism": "STATIC_QUERY",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": "O-SIGN-5"
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "may"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "if",
+     "may"
+    ]
+   },
+   "flags": [
+    "dup_candidate",
+    "angle_differs"
+   ]
+  },
+  {
+   "id": "O-N11",
+   "severity": "LOW",
+   "gapSource": "packages/lib/server-only/user/disable-user.ts; absence of ApiToken cascade delete trigger",
+   "calibration": false,
+   "grammar": {
+    "primary": "STALE_CREDENTIAL",
+    "operands": "ApiToken-not-deleted-on-user-delete",
+    "mechanism": "UNKNOWN",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": [
+    "vocab_new_candidate"
+   ]
+  },
+  {
+   "id": "O-N12",
+   "severity": "MED",
+   "gapSource": "packages/lib/server-only/folder/delete-folder.ts \u2014 schema marks subfolders parentId on cascade but does not move child envelopes; Envelope.folderId is set null via SetNull",
+   "calibration": false,
+   "grammar": {
+    "primary": "NO_AUDIT",
+    "operands": "folderReparentOnDelete",
+    "mechanism": "WITNESS",
+    "handler_form": "Envelope.folderId set null via SetNull",
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-N13",
+   "severity": "MED",
+   "gapSource": "packages/api/v1/implementation.ts downloadSignedDocument \u2014 presigned URL TTL not bounded by signer/role",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNBOUNDED",
+    "operands": "presignedUrlTTL",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [
+     "NO_AUDIT"
+    ],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-N14",
+   "severity": "MED",
+   "gapSource": "packages/lib/server-only/field/sign-field-with-token.ts \u2014 Signature row uses base64 image; no image-size cap mentioned in createEnvelopeFields validation",
+   "calibration": false,
+   "grammar": {
+    "primary": "UNBOUNDED",
+    "operands": "signatureImageSize",
+    "mechanism": "WITNESS",
+    "handler_form": null,
+    "scope": null,
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [],
+    "severity_rationale": null,
+    "hedge_mechanical": []
+   },
+   "flags": []
+  },
+  {
+   "id": "O-N15",
+   "severity": "MED",
+   "gapSource": "No log-redaction config visible in packages/lib/logger or comparable; PAPI handlers log error messages directly",
+   "calibration": false,
+   "grammar": {
+    "primary": "PII_IN_LOGS",
+    "operands": "logRedaction",
+    "mechanism": "UNKNOWN",
+    "handler_form": null,
+    "scope": "repo",
+    "secondaries": [],
+    "dup_of": null
+   },
+   "slots": {
+    "premise": null,
+    "defeater": null,
+    "hedge": [
+     "potentially"
+    ],
+    "severity_rationale": null,
+    "hedge_mechanical": [
+     "potentially"
+    ]
+   },
+   "flags": [
+    "vocab_new_candidate"
+   ]
+  }
+ ]
+}
