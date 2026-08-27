@@ -50,18 +50,25 @@ file should not halt the pipeline. Run it with `ede verify-paths`.
 ## Repository layout
 
 ```
-v3_python/   Python implementation: Pydantic models, validators, CLI, assemblers
+ede/         the package — Pydantic models, validators, assemblers, CLI
+  nodes/       per-node schemas (Node 0 through Node 4)
+  verifiers/   L4 claims-vs-disk path verification
+  grammar/     obstacle claim vocabulary and discharge mechanisms
+tests/       96 tests, roughly half of them negative
+prompts/     the node prompts the LLM runner reads
+docs/        design documents and the CLI/API reference
+research/    the phase 0 corpus, its analysis scripts, and per-run outputs
+examples/    sample pipeline artifacts
 ```
 
 The earlier passes — V1 (markdown prompts) and V2 (TypeScript / Zod) — live on
 the `archive/v1-v2` branch for design lineage. They are not part of `main`.
 
-### v3_python (current)
+## Install and use
 
 Installable Python package providing the `ede` CLI and library:
 
 ```bash
-cd v3_python
 pip install -e .
 
 ede validate --node0 output/00-recon.json
@@ -77,17 +84,18 @@ ede render --node0 00.json --node1 01.json --node2 02.json --node3 03.json --nod
 
 | Document | What it covers |
 |----------|----------------|
-| [`v3_python/README.md`](v3_python/README.md) | Full CLI and Python API surface |
-| [`v3_python/FORMAL_THEORY.md`](v3_python/FORMAL_THEORY.md) | Why the layer split is *forced* rather than chosen — the validation layers mapped onto the Chomsky hierarchy, with termination and decidability arguments |
-| [`v3_python/CONSTRAINT_RULES.md`](v3_python/CONSTRAINT_RULES.md) | The complete rule catalogue and the evidence → requirement traceability chain |
-| [`v3_python/ARCHITECTURE_DECISIONS.md`](v3_python/ARCHITECTURE_DECISIONS.md) | Settled decisions and what was explicitly rejected, with reasons |
+| [`docs/cli-and-api.md`](docs/cli-and-api.md) | Full CLI and Python API surface |
+| [`docs/formal-theory.md`](docs/formal-theory.md) | Why the layer split is *forced* rather than chosen — the validation layers mapped onto the Chomsky hierarchy, with termination and decidability arguments |
+| [`docs/constraint-rules.md`](docs/constraint-rules.md) | The complete rule catalogue and the evidence → requirement traceability chain |
+| [`docs/architecture-decisions.md`](docs/architecture-decisions.md) | Settled decisions and what was explicitly rejected, with reasons |
+| [`docs/validator-recon.md`](docs/validator-recon.md) | Self-audit of the validators against their spec, with a per-node gap matrix |
 
 The word "grammar" in this repository is not a metaphor. The Pydantic models
 *are* a formal grammar — terminals, nonterminals, production rules, start
 symbol — and `model_validate()` is its parser. L1 is context-free and L2 is
 context-sensitive, which is precisely why L2 cannot be a `@model_validator`: a
 model validator has access only to its own instance. The argument is worked out
-in [`FORMAL_THEORY.md`](v3_python/FORMAL_THEORY.md).
+in [`formal-theory.md`](docs/formal-theory.md).
 
 ## Design principles
 
@@ -102,7 +110,7 @@ The four validation layers constrain the *shape* of what the pipeline emits.
 They say nothing about whether an individual finding is **true**. Node 3
 produces obstacles as prose, so "is this real?" stays a judgement call.
 
-`v3_python/ede/grammar/` is the vocabulary that makes it a mechanical one:
+`ede/grammar/` is the vocabulary that makes it a mechanical one:
 
 - **20 claim types** (`TOCTOU`, `ERROR_COLLAPSED`, `NO_WRITER`, …), each
   stack- and project-independent, declaring its operand arity and the slots a
@@ -117,7 +125,7 @@ produces obstacles as prose, so "is this real?" stays a judgement call.
 - `NONE` is defined as **discharge-resistant** — membership is a mechanical
   test (can a discharge be stated?), not a judgement.
 
-`doc/phase0/` holds the empirical validation: all 92 obstacles from a
+`research/phase0/` holds the empirical validation: all 92 obstacles from a
 Documenso run, hand-annotated under the frozen vocabulary. The 11 core types
 cover 66/76 real obstacles (87%); content-addressed identity collapses 92
 records to 89 while correctly refusing a predicted fourth merge;
@@ -125,7 +133,7 @@ records to 89 while correctly refusing a predicted fourth merge;
 finding and its source-corrected form differ in a **load-bearing** field rather
 than in prose.
 
-Where [`FORMAL_THEORY.md`](v3_python/FORMAL_THEORY.md) treats the *pipeline* as
+Where [`formal-theory.md`](docs/formal-theory.md) treats the *pipeline* as
 a formal language and asks whether an artifact is well-formed, the obstacle
 grammar asks the next question down: given a well-formed finding, can its truth
 be discharged? The first is a membership problem, the second a falsifiability
@@ -138,5 +146,5 @@ package or affects the CLI.
 
 ## Status
 
-- v3_python: active (this branch)
+- v3 (Python / Pydantic): active on `main`
 - V1 (markdown prompts) and V2 (TypeScript / Zod): preserved on `archive/v1-v2`

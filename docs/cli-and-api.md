@@ -1,6 +1,7 @@
-# EDE -- Domain Extraction Engine
+# CLI and API Reference
 
-Formal grammar and validators for the 5-node domain extraction pipeline. Defines the intermediate representation (IR) that flows between nodes, with four-layer validation.
+Complete command and Python API surface for the `ede` package. For what the
+project is and why it is built this way, see the [root README](../README.md).
 
 ## Architecture
 
@@ -127,16 +128,16 @@ or stale.
 
 L2 and L3 deliberately are **not** `@model_validator`s. A model validator sees
 only its own instance, which is context-free scope; cross-node reference needs
-data from another artifact. See `FORMAL_THEORY.md` for why that boundary is
+data from another artifact. See [`formal-theory.md`](formal-theory.md) for why that boundary is
 forced rather than chosen.
 
-See `CONSTRAINT_RULES.md` for the complete rule catalogue.
+See [`constraint-rules.md`](constraint-rules.md) for the complete rule catalogue.
 
 ## Obstacle Grammar
 
 `ede/grammar/` holds a frozen, versioned vocabulary of 20 stack-independent
 obstacle claim types with declared operand arity, required slots, and a
-two-layer evidence/inference discharge model. `doc/phase0/` holds its empirical
+two-layer evidence/inference discharge model. `research/phase0/` holds its empirical
 validation against a 92-obstacle corpus, plus a pre-registered falsification
 test.
 
@@ -145,4 +146,4 @@ See the root `README.md` for the full description.
 
 ## Design Decisions
 
-See `ARCHITECTURE_DECISIONS.md` for the full rationale behind all settled decisions.
+See [`architecture-decisions.md`](architecture-decisions.md) for the full rationale behind all settled decisions.

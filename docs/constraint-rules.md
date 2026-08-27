@@ -71,6 +71,45 @@ Domain-level correctness. Checked by `validate_node_n()`. Produce `WARN` finding
 
 **Promoted to L1:** L3-gap-counts-match (now `GapSummary` model_validator), L3-metrics-match for total_requirements (now `Node3Metrics` model_validator), New obstacle O-N prefix (now `NewObstacle` model_validator).
 
+## Layer 4 -- Path Verification
+
+Claims versus disk. Checked by `verify_*_paths()` in `ede/verifiers/paths.py`.
+Produce `WARN` findings. Run with `ede verify-paths --repo <target>`.
+
+L1 through L3 all ask the same kind of question: is this document
+self-consistent? They can all pass on an artifact whose every file reference
+was invented, because nothing in the JSON contradicts anything else in the
+JSON. L4 is the only layer that consults something outside the document.
+
+| Rule ID | Node | What it checks |
+|---------|------|---------------|
+| L4-path-missing | 0,1,2,4 | A path-typed field does not resolve against the target repository |
+| L4-path-wrong-kind | 0,1,2,4 | The path resolves but is a file where a directory was expected, or the reverse |
+
+Two rules, but they probe every path-typed field in the pipeline:
+
+| Verifier | Node | Fields probed |
+|----------|------|--------------|
+| `verify_recon_paths` | 0 | registry area directories, architecture frontend/backend/shared dirs, persistence schemaLocation, external service configLocation, dispatch plan directories, keyFiles |
+| `verify_events_paths` | 1 | scan area directories, filesScanned, filesSkipped, event location, event hotSpot locations, hotSpotSummary locations |
+| `verify_aggregates_paths` | 2 | aggregate keyFiles, state locations, transition codeLocation, gap codeLocation |
+| `verify_spec_paths` | 4 | fileIndex entries |
+| `verify_fragment_paths` | 1,2,3 | the same fields at the sub-agent boundary, before assembly folds them into node output |
+
+Node 3 has no path-typed fields, so it has no verifier. That is a property of
+the schema, not an omission.
+
+Findings are `WARN` and the command always exits 0. A missing path is strong
+evidence a claim was hallucinated or has gone stale, but a legitimately moved
+or renamed file should not halt a pipeline run. The fragment-level verifier
+matters most: it catches an invented path while it can still be traced to the
+sub-agent that produced it.
+
+L4 sits outside the formal-language framing that governs L1 through L3 --
+it queries an oracle rather than inspecting a string. See
+[`formal-theory.md`](formal-theory.md) for why that distinction is principled
+rather than incidental.
+
 ## Traceability Chain
 
 ```

@@ -1,16 +1,29 @@
 # EDE Validator Implementation — Reconnaissance Report
 
+> **Status: a self-audit, kept as a record.** This report drove the L4 work that
+> followed it — the gap it identified between "the JSON is self-consistent" and
+> "the JSON describes the actual repository" is what `ede/verifiers/paths.py`
+> now closes. The L4 column below was added afterwards; everything else is the
+> original findings, and they still hold. In particular the L2-fragment
+> asymmetry is unchanged: the `validate-fragment` L2 block is still guarded by
+> `if node == 2`, so Nodes 1 and 3 get no intra-fragment referential checks.
+
 ## Summary Table
 
-| Node | L1 | L2-fragment | L2-assembled | L3 | CLI wired |
-|------|-----|-------------|--------------|-----|-----------|
-| 0    | ✅  | N/A (no fragments) | ✅ | ⚠️ | ✅ |
-| 1    | ✅  | ⚠️ | ✅ | ⚠️ | ✅ |
-| 2    | ✅  | ✅ | ✅ | ⚠️ | ✅ |
-| 3    | ✅  | ❌ | ✅ | ⚠️ | ✅ |
-| 4    | ✅  | N/A (no fragments) | ✅ | ⚠️ | ✅ |
+| Node | L1 | L2-fragment | L2-assembled | L3 | L4 | CLI wired |
+|------|-----|-------------|--------------|-----|-----|-----------|
+| 0    | ✅  | N/A (no fragments) | ✅ | ⚠️ | ✅ | ✅ |
+| 1    | ✅  | ⚠️ | ✅ | ⚠️ | ✅ | ✅ |
+| 2    | ✅  | ✅ | ✅ | ⚠️ | ✅ | ✅ |
+| 3    | ✅  | ❌ | ✅ | ⚠️ | N/A (no path fields) | ✅ |
+| 4    | ✅  | N/A (no fragments) | ✅ | ⚠️ | ✅ | ✅ |
 
 Legend: ✅ implemented, ⚠️ partial (some checks present but gaps vs. spec), ❌ missing, N/A not applicable.
+
+Fragments also get L4 coverage through `verify_fragment_paths`, reachable via
+`ede validate-fragment --repo <target>`. That is the highest-value probe point:
+it catches an invented path while it can still be attributed to the sub-agent
+that produced it, before assembly folds it into the node output.
 
 ---
 
@@ -22,8 +35,9 @@ Legend: ✅ implemented, ⚠️ partial (some checks present but gaps vs. spec),
   - `assemble` (line 93) — fragment assembly for nodes 1, 2, 3
   - `schema` (line 165) — JSON Schema dump for node or fragment models
   - `coverage` (line 206) — Node 0 keyFiles vs Node 1 filesScanned cross-ref
-  - `validate-fragment` (line 256) — L1 + cheap L2 for individual fragments
-  - `render` (line 316) — Markdown spec generation from all 5 nodes
+  - `validate-fragment` (line 256) — L1 + cheap L2 for individual fragments, optional L4 via `--repo`
+  - `verify-paths` (line 330) — L4 path resolution against the target repository
+  - `render` (line 392) — Markdown spec generation from all 5 nodes
 - **Shared validation error type**: `Finding` at `ede/primitives.py:152-164`
   - Fields: `level: FindingLevel (ERROR|WARN|INFO)`, `node: int`, `where: str`, `message: str`, `rule: str | None`
 - **Orchestrator return type**: `ValidationResult` (TypedDict) at `ede/constraints.py:449-454`

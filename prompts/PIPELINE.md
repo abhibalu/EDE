@@ -2,7 +2,7 @@
 
 ## Setup
 
-Ensure `ede` is installed: `pip install -e /path/to/v3_python`
+Ensure `ede` is installed: `pip install -e /path/to/EDE`
 
 ## Running the pipeline
 
