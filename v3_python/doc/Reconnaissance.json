@@ -1,0 +1,632 @@
+{
+    "pipelineVersion": "0.1.0",
+    "node": 0,
+    "generatedAt": "2026-06-03T00:00:00Z",
+    "registry": {
+        "project": "pretix",
+        "version": "0.1.0",
+        "areas": [
+            {
+                "code": "ORD",
+                "name": "Orders & Cart",
+                "directories": [
+                    "src/pretix/base/models/orders.py",
+                    "src/pretix/base/services/orders.py",
+                    "src/pretix/base/services/cart.py",
+                    "src/pretix/base/services/pricing.py"
+                ]
+            },
+            {
+                "code": "EVT",
+                "name": "Events, Items & Quotas",
+                "directories": [
+                    "src/pretix/base/models/event.py",
+                    "src/pretix/base/models/items.py",
+                    "src/pretix/base/services/quotas.py",
+                    "src/pretix/base/services/items.py"
+                ]
+            },
+            {
+                "code": "PAY",
+                "name": "Payments & Refunds",
+                "directories": [
+                    "src/pretix/base/payment.py",
+                    "src/pretix/plugins/stripe",
+                    "src/pretix/plugins/paypal",
+                    "src/pretix/plugins/paypal2",
+                    "src/pretix/plugins/banktransfer",
+                    "src/pretix/plugins/manualpayment"
+                ]
+            },
+            {
+                "code": "CHK",
+                "name": "Check-in",
+                "directories": [
+                    "src/pretix/base/models/checkin.py",
+                    "src/pretix/base/services/checkin.py",
+                    "src/pretix/plugins/webcheckin",
+                    "src/pretix/plugins/autocheckin",
+                    "src/pretix/plugins/pretixdroid"
+                ]
+            },
+            {
+                "code": "VCH",
+                "name": "Vouchers, Discounts & Gift Cards",
+                "directories": [
+                    "src/pretix/base/models/vouchers.py",
+                    "src/pretix/base/models/discount.py",
+                    "src/pretix/base/models/giftcards.py",
+                    "src/pretix/base/services/vouchers.py"
+                ]
+            },
+            {
+                "code": "INV",
+                "name": "Invoicing & Tax",
+                "directories": [
+                    "src/pretix/base/models/invoices.py",
+                    "src/pretix/base/models/tax.py",
+                    "src/pretix/base/services/invoices.py",
+                    "src/pretix/base/invoicing"
+                ]
+            },
+            {
+                "code": "API",
+                "name": "REST API",
+                "directories": [
+                    "src/pretix/api/views",
+                    "src/pretix/api/serializers",
+                    "src/pretix/api/auth"
+                ]
+            },
+            {
+                "code": "PRS",
+                "name": "Presale (Public Shop)",
+                "directories": [
+                    "src/pretix/presale/views",
+                    "src/pretix/presale/checkoutflow.py"
+                ]
+            }
+        ]
+    },
+    "identity": {
+        "repo": "pretix",
+        "languages": [
+            "Python",
+            "JavaScript",
+            "TypeScript",
+            "Vue",
+            "Pug",
+            "Sass"
+        ],
+        "frameworks": [
+            "Django 5.2",
+            "Django REST Framework 3.17",
+            "Celery 5.6",
+            "Vue 3",
+            "Vite 8"
+        ],
+        "packageManagers": [
+            "pip",
+            "npm"
+        ]
+    },
+    "architecture": {
+        "type": "fullstack",
+        "frontendDir": "src/pretix/static",
+        "backendDir": "src/pretix",
+        "sharedDir": null
+    },
+    "persistence": {
+        "database": "PostgreSQL",
+        "orm": "Django ORM",
+        "schemaLocation": "src/pretix/base/models/",
+        "storage": "Django storage (local FS by default; pluggable S3/etc.)"
+    },
+    "externalServices": [
+        {
+            "name": "Stripe",
+            "purpose": "Card payments and refunds",
+            "configLocation": "src/pretix/plugins/stripe/payment.py"
+        },
+        {
+            "name": "PayPal",
+            "purpose": "PayPal Checkout payments",
+            "configLocation": "src/pretix/plugins/paypal2/payment.py"
+        },
+        {
+            "name": "SEPA bank transfer",
+            "purpose": "Bank transfer reconciliation via MT940 import",
+            "configLocation": "src/pretix/plugins/banktransfer/"
+        },
+        {
+            "name": "Redis",
+            "purpose": "Cache and Celery broker",
+            "configLocation": "src/pretix/settings.py"
+        },
+        {
+            "name": "Celery",
+            "purpose": "Async task queue (mail, exports, ticket generation)",
+            "configLocation": "src/pretix/celery_app.py"
+        },
+        {
+            "name": "Sentry",
+            "purpose": "Error tracking",
+            "configLocation": "src/pretix/settings.py"
+        },
+        {
+            "name": "WebAuthn / U2F",
+            "purpose": "Two-factor authentication",
+            "configLocation": "src/pretix/base/models/auth.py"
+        },
+        {
+            "name": "OAuth2 provider",
+            "purpose": "Third-party API access via django-oauth-toolkit",
+            "configLocation": "src/pretix/api/auth/"
+        }
+    ],
+    "dispatchPlan": [
+        {
+            "code": "ORD",
+            "name": "Orders & Cart",
+            "directories": [
+                "src/pretix/base/models/orders.py",
+                "src/pretix/base/services/orders.py",
+                "src/pretix/base/services/cart.py",
+                "src/pretix/base/services/pricing.py"
+            ]
+        },
+        {
+            "code": "EVT",
+            "name": "Events, Items & Quotas",
+            "directories": [
+                "src/pretix/base/models/event.py",
+                "src/pretix/base/models/items.py",
+                "src/pretix/base/services/quotas.py",
+                "src/pretix/base/services/items.py"
+            ]
+        },
+        {
+            "code": "PAY",
+            "name": "Payments & Refunds",
+            "directories": [
+                "src/pretix/base/payment.py",
+                "src/pretix/plugins/stripe",
+                "src/pretix/plugins/paypal2",
+                "src/pretix/plugins/banktransfer"
+            ]
+        },
+        {
+            "code": "CHK",
+            "name": "Check-in",
+            "directories": [
+                "src/pretix/base/models/checkin.py",
+                "src/pretix/base/services/checkin.py",
+                "src/pretix/plugins/webcheckin"
+            ]
+        },
+        {
+            "code": "VCH",
+            "name": "Vouchers, Discounts & Gift Cards",
+            "directories": [
+                "src/pretix/base/models/vouchers.py",
+                "src/pretix/base/models/discount.py",
+                "src/pretix/base/models/giftcards.py",
+                "src/pretix/base/services/vouchers.py"
+            ]
+        },
+        {
+            "code": "INV",
+            "name": "Invoicing & Tax",
+            "directories": [
+                "src/pretix/base/models/invoices.py",
+                "src/pretix/base/models/tax.py",
+                "src/pretix/base/services/invoices.py"
+            ]
+        },
+        {
+            "code": "API",
+            "name": "REST API",
+            "directories": [
+                "src/pretix/api/views",
+                "src/pretix/api/serializers"
+            ]
+        },
+        {
+            "code": "PRS",
+            "name": "Presale (Public Shop)",
+            "directories": [
+                "src/pretix/presale/views",
+                "src/pretix/presale/checkoutflow.py"
+            ]
+        }
+    ],
+    "schemaEntities": [
+        {
+            "table": "pretixbase_order",
+            "keyColumns": [
+                "id",
+                "code",
+                "event_id",
+                "status",
+                "datetime",
+                "total",
+                "expires"
+            ],
+            "relationships": [
+                "order.event_id → event.id",
+                "order.customer_id → customer.id"
+            ]
+        },
+        {
+            "table": "pretixbase_orderposition",
+            "keyColumns": [
+                "id",
+                "order_id",
+                "item_id",
+                "variation_id",
+                "subevent_id",
+                "price",
+                "voucher_id",
+                "addon_to_id",
+                "secret"
+            ],
+            "relationships": [
+                "orderposition.order_id → order.id",
+                "orderposition.item_id → item.id",
+                "orderposition.variation_id → itemvariation.id",
+                "orderposition.voucher_id → voucher.id",
+                "orderposition.addon_to_id → orderposition.id"
+            ]
+        },
+        {
+            "table": "pretixbase_cartposition",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "cart_id",
+                "item_id",
+                "variation_id",
+                "subevent_id",
+                "price",
+                "expires",
+                "voucher_id"
+            ],
+            "relationships": [
+                "cartposition.event_id → event.id",
+                "cartposition.item_id → item.id",
+                "cartposition.voucher_id → voucher.id"
+            ]
+        },
+        {
+            "table": "pretixbase_orderpayment",
+            "keyColumns": [
+                "id",
+                "order_id",
+                "state",
+                "amount",
+                "provider",
+                "info"
+            ],
+            "relationships": [
+                "orderpayment.order_id → order.id"
+            ]
+        },
+        {
+            "table": "pretixbase_orderrefund",
+            "keyColumns": [
+                "id",
+                "order_id",
+                "payment_id",
+                "state",
+                "source",
+                "amount",
+                "provider"
+            ],
+            "relationships": [
+                "orderrefund.order_id → order.id",
+                "orderrefund.payment_id → orderpayment.id"
+            ]
+        },
+        {
+            "table": "pretixbase_orderfee",
+            "keyColumns": [
+                "id",
+                "order_id",
+                "fee_type",
+                "value",
+                "tax_value"
+            ],
+            "relationships": [
+                "orderfee.order_id → order.id"
+            ]
+        },
+        {
+            "table": "pretixbase_transaction",
+            "keyColumns": [
+                "id",
+                "order_id",
+                "datetime",
+                "item_id",
+                "variation_id",
+                "subevent_id",
+                "count",
+                "price"
+            ],
+            "relationships": [
+                "transaction.order_id → order.id"
+            ]
+        },
+        {
+            "table": "pretixbase_event",
+            "keyColumns": [
+                "id",
+                "organizer_id",
+                "slug",
+                "name",
+                "date_from",
+                "date_to",
+                "live",
+                "currency"
+            ],
+            "relationships": [
+                "event.organizer_id → organizer.id"
+            ]
+        },
+        {
+            "table": "pretixbase_subevent",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "name",
+                "date_from",
+                "active"
+            ],
+            "relationships": [
+                "subevent.event_id → event.id"
+            ]
+        },
+        {
+            "table": "pretixbase_item",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "category_id",
+                "name",
+                "default_price",
+                "tax_rule_id",
+                "admission",
+                "active"
+            ],
+            "relationships": [
+                "item.event_id → event.id",
+                "item.category_id → itemcategory.id",
+                "item.tax_rule_id → taxrule.id"
+            ]
+        },
+        {
+            "table": "pretixbase_itemvariation",
+            "keyColumns": [
+                "id",
+                "item_id",
+                "value",
+                "default_price",
+                "active"
+            ],
+            "relationships": [
+                "itemvariation.item_id → item.id"
+            ]
+        },
+        {
+            "table": "pretixbase_quota",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "subevent_id",
+                "name",
+                "size"
+            ],
+            "relationships": [
+                "quota.event_id → event.id",
+                "quota.subevent_id → subevent.id"
+            ]
+        },
+        {
+            "table": "pretixbase_voucher",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "code",
+                "valid_until",
+                "max_usages",
+                "redeemed",
+                "item_id",
+                "quota_id",
+                "value",
+                "price_mode"
+            ],
+            "relationships": [
+                "voucher.event_id → event.id",
+                "voucher.item_id → item.id",
+                "voucher.quota_id → quota.id"
+            ]
+        },
+        {
+            "table": "pretixbase_checkin",
+            "keyColumns": [
+                "id",
+                "position_id",
+                "list_id",
+                "datetime",
+                "type",
+                "successful"
+            ],
+            "relationships": [
+                "checkin.position_id → orderposition.id",
+                "checkin.list_id → checkinlist.id"
+            ]
+        },
+        {
+            "table": "pretixbase_checkinlist",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "name",
+                "all_products",
+                "subevent_id"
+            ],
+            "relationships": [
+                "checkinlist.event_id → event.id"
+            ]
+        },
+        {
+            "table": "pretixbase_invoice",
+            "keyColumns": [
+                "id",
+                "order_id",
+                "event_id",
+                "invoice_no",
+                "date",
+                "is_cancellation",
+                "refers_id"
+            ],
+            "relationships": [
+                "invoice.order_id → order.id",
+                "invoice.event_id → event.id",
+                "invoice.refers_id → invoice.id"
+            ]
+        },
+        {
+            "table": "pretixbase_giftcard",
+            "keyColumns": [
+                "id",
+                "issuer_id",
+                "secret",
+                "currency",
+                "value"
+            ],
+            "relationships": [
+                "giftcard.issuer_id → organizer.id"
+            ]
+        },
+        {
+            "table": "pretixbase_organizer",
+            "keyColumns": [
+                "id",
+                "slug",
+                "name"
+            ],
+            "relationships": []
+        },
+        {
+            "table": "pretixbase_customer",
+            "keyColumns": [
+                "id",
+                "organizer_id",
+                "identifier",
+                "email",
+                "name_parts"
+            ],
+            "relationships": [
+                "customer.organizer_id → organizer.id"
+            ]
+        },
+        {
+            "table": "pretixbase_waitinglistentry",
+            "keyColumns": [
+                "id",
+                "event_id",
+                "item_id",
+                "variation_id",
+                "voucher_id",
+                "email"
+            ],
+            "relationships": [
+                "waitinglistentry.event_id → event.id",
+                "waitinglistentry.item_id → item.id",
+                "waitinglistentry.voucher_id → voucher.id"
+            ]
+        }
+    ],
+    "keyFiles": [
+        {
+            "path": "src/pretix/base/models/orders.py",
+            "rationale": "Core domain: Order, OrderPosition, OrderPayment, OrderRefund, OrderFee, CartPosition, Transaction. Order status machine lives here."
+        },
+        {
+            "path": "src/pretix/base/services/orders.py",
+            "rationale": "Order lifecycle service: place, approve, deny, cancel, reactivate, mark paid/refunded. Primary source of order-state transitions."
+        },
+        {
+            "path": "src/pretix/base/services/cart.py",
+            "rationale": "Cart operations: add/remove items, voucher application, reservation expiry. Source of cart-state events."
+        },
+        {
+            "path": "src/pretix/base/services/pricing.py",
+            "rationale": "Price computation rules: vouchers, discounts, taxes. Cross-cuts ORD/VCH/INV."
+        },
+        {
+            "path": "src/pretix/base/models/event.py",
+            "rationale": "Event, SubEvent, EventLock and meta. Defines tenancy and date-based eligibility."
+        },
+        {
+            "path": "src/pretix/base/models/items.py",
+            "rationale": "Item, ItemVariation, ItemAddOn, ItemBundle, Quota, Question. Catalogue + inventory."
+        },
+        {
+            "path": "src/pretix/base/services/quotas.py",
+            "rationale": "Quota availability calculation. Critical for sold-out gating and waiting-list triggers."
+        },
+        {
+            "path": "src/pretix/base/payment.py",
+            "rationale": "Abstract BasePaymentProvider interface plus FreeOrder/Manual/Offsetting providers. Defines payment-provider contract."
+        },
+        {
+            "path": "src/pretix/plugins/stripe/payment.py",
+            "rationale": "Stripe payment provider implementation with webhooks."
+        },
+        {
+            "path": "src/pretix/plugins/paypal2/payment.py",
+            "rationale": "PayPal Checkout payment provider."
+        },
+        {
+            "path": "src/pretix/plugins/banktransfer/services.py",
+            "rationale": "Bank-transfer reconciliation via MT940 import."
+        },
+        {
+            "path": "src/pretix/base/services/checkin.py",
+            "rationale": "Check-in execution logic with rule evaluation, gates, and entry/exit semantics."
+        },
+        {
+            "path": "src/pretix/base/models/checkin.py",
+            "rationale": "Checkin, CheckinList models incl. rule expressions."
+        },
+        {
+            "path": "src/pretix/base/models/vouchers.py",
+            "rationale": "Voucher model and redemption-tracking fields."
+        },
+        {
+            "path": "src/pretix/base/services/vouchers.py",
+            "rationale": "Voucher creation, validation, and revocation flows."
+        },
+        {
+            "path": "src/pretix/base/models/invoices.py",
+            "rationale": "Invoice and InvoiceLine, including cancellation invoice linkage."
+        },
+        {
+            "path": "src/pretix/base/services/invoices.py",
+            "rationale": "Invoice generation and cancellation rules."
+        },
+        {
+            "path": "src/pretix/presale/checkoutflow.py",
+            "rationale": "Multi-step public checkout flow (cart → questions → payment → confirm). Aggregates many domain events."
+        },
+        {
+            "path": "src/pretix/api/views/order.py",
+            "rationale": "Order REST endpoints — external API surface for order lifecycle."
+        },
+        {
+            "path": "src/pretix/base/signals.py",
+            "rationale": "Domain signal definitions used across services for cross-cutting effects."
+        }
+    ]
+}
