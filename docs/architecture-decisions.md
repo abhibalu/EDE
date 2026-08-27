@@ -61,4 +61,43 @@ User -> Claude Code -> reads prompts/*.md + reads codebase -> writes JSON
 | `ede assemble` | Merges sub-agent fragments | Claude Code runs it instead of doing assembly itself |
 | `ede schema` | Dumps JSON Schema for a node | Claude Code reads it to know expected output shape |
 | `ede coverage` | Cross-references keyFiles vs scanned | Quality check Claude Code runs after Node 1 |
+| `ede validate-fragment` | L1 + intra-fragment checks on one fragment | A sub-agent self-checks before the orchestrator sees the file |
+| `ede verify-paths` | L4 -- resolves path claims against the target repo | Catches hallucinated or stale file references |
+| `ede render` | Deterministic Markdown spec from the five artifacts | Final step; zero LLM cost |
 | Pydantic models | Define the grammar | Validators enforce it at boundaries |
+
+## Decisions Since
+
+The settled decisions above date from the V2 to V3 migration and are recorded
+as they were made. The decisions below came later and did not revise them.
+
+8. **L4 path verification added as a fourth layer.** L1 through L3 establish
+   only that an artifact is internally consistent, which a document with
+   entirely fabricated file references can be. L4 resolves every path-typed
+   field against the target repository. It is not a fourth rung on the same
+   ladder -- it queries the filesystem rather than inspecting the document, so
+   it sits outside the formal-language framing that governs the other three.
+   See `formal-theory.md` section 14.
+
+   Decision 2 above still holds unchanged: L1, L2, and L3 remain the layers
+   that decide membership, and L2/L3 still must not collapse into
+   `@model_validator`.
+
+9. **L4 findings are `WARN`, never `ERROR`.** A referential violation is a
+   proof about the document and does not expire. A missing path is an
+   observation about the world at one moment -- a file may have been moved
+   after a correct extraction. `ede verify-paths` always exits 0.
+
+10. **The evidence contract extends to transitions.** `StateEntry` carried
+    `evidence` from the start; `Transition` did not, so a state change could be
+    asserted with no grounding. Transitions now require `evidence` and
+    `codeLocation`, and the prompt specifies that the location must point at
+    the code performing the state write, not at code declaring the transition
+    legal.
+
+11. **The obstacle grammar is data, not code.** `ede/grammar/` holds a frozen,
+    versioned vocabulary and a discharge-mechanism table as JSON. Nothing in
+    the package imports it, and `ede/grammar/checkers/` is deliberately empty:
+    it fixes the `(claim_type, stack, layer)` keying convention before any
+    checker exists so that checkers cannot fork per project. Keeping it inert
+    means it cannot affect validation until that is an explicit decision.

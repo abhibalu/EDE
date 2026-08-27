@@ -10,11 +10,11 @@ When EDE runs `validate_pipeline()` and returns `valid: true` or `valid: false`,
 
 A *formal language* is a set of strings. Not English sentences -- any set of sequences over some alphabet. The **membership problem** asks: given a string, does it belong to the language?
 
-EDE's language is the set of all JSON documents that pass all three validation layers. A specific Node 2 JSON blob is a "string." The alphabet is the set of characters that can appear in valid JSON, but more usefully, EDE's effective alphabet is the set of all valid field values: enum members like `"CRITICAL"`, ID strings like `"E-US-01"`, integers, booleans, and the structural tokens (`{`, `}`, `[`, `]`) that compose them.
+EDE's language is the set of all JSON documents that pass the three membership layers -- L1, L2, and L3. (L4 exists and is discussed in Section 14, but it is deliberately not part of this definition: it asks a question no grammar can ask.) A specific Node 2 JSON blob is a "string." The alphabet is the set of characters that can appear in valid JSON, but more usefully, EDE's effective alphabet is the set of all valid field values: enum members like `"CRITICAL"`, ID strings like `"E-US-01"`, integers, booleans, and the structural tokens (`{`, `}`, `[`, `]`) that compose them.
 
 The membership oracle is `validate_pipeline()` (`constraints.py:457`). It takes a `PipelineData` dictionary and returns a `ValidationResult` with a binary verdict. In `cli.py:66-70`, L1 failure raises `Exit(1)`. In `cli.py:86-87`, L2/L3 errors do the same. Accept or reject. This binary decision is the fundamental operation of every automaton in the theory.
 
-Here is the key insight that structures everything that follows: **not all membership checks are equally hard**. Checking whether a string matches `^E-[A-Z]{2,4}-\d{1,3}$` requires almost no memory. Checking whether a `GoalNode` tree is well-formed requires tracking nesting depth. Checking whether `"E-US-02"` is a valid predecessor requires scanning a completely different part of the document. Each of these requires a more powerful computational mechanism. That hierarchy of power is the Chomsky hierarchy, and it is why EDE has three layers.
+Here is the key insight that structures everything that follows: **not all membership checks are equally hard**. Checking whether a string matches `^E-[A-Z]{2,4}-\d{1,3}$` requires almost no memory. Checking whether a `GoalNode` tree is well-formed requires tracking nesting depth. Checking whether `"E-US-02"` is a valid predecessor requires scanning a completely different part of the document. Each of these requires a more powerful computational mechanism. That hierarchy of power is the Chomsky hierarchy, and it is why EDE has three membership layers.
 
 ---
 
@@ -52,9 +52,9 @@ This is a production rule in BNF-like notation. It says: a `Node2Output` is comp
 
 ---
 
-## 3. The Chomsky Hierarchy -- Why Three Layers Exist
+## 3. The Chomsky Hierarchy -- Why Three Membership Layers Exist
 
-EDE's three validation layers are not an arbitrary design choice. They correspond to three distinct levels of the Chomsky hierarchy, each requiring a strictly more powerful computational mechanism to check.
+EDE's three membership layers are not an arbitrary design choice. They correspond to three distinct levels of the Chomsky hierarchy, each requiring a strictly more powerful computational mechanism to check. A fourth layer, L4, sits outside this hierarchy entirely; Section 14 explains why.
 
 The hierarchy is a nested sequence of language classes, each strictly containing the one below:
 
@@ -77,7 +77,7 @@ EDE's layers map as follows:
 
 Each level requires a **strictly more powerful** machine. You cannot check context-sensitive properties with a context-free parser. This is not a limitation of Pydantic's implementation; it is a mathematical impossibility proven by the hierarchy.
 
-This is why `ARCHITECTURE_DECISIONS.md:12` reads: *"Do NOT collapse L2/L3 into `@model_validator` -- those checks need data from other nodes."* That decision is not just engineering preference. A `@model_validator` has access only to the data within its own model instance. That is context-free scope. But L2 checks need data from other models. That is context-sensitive scope. The decision to keep them separate is forced by the Chomsky hierarchy.
+This is why `architecture-decisions.md:12` reads: *"Do NOT collapse L2/L3 into `@model_validator` -- those checks need data from other nodes."* That decision is not just engineering preference. A `@model_validator` has access only to the data within its own model instance. That is context-free scope. But L2 checks need data from other models. That is context-sensitive scope. The decision to keep them separate is forced by the Chomsky hierarchy.
 
 ---
 
@@ -196,7 +196,7 @@ if n4 and n3 and n2 and n1:  findings.extend(validate_node4(n4, n3, n2, n1))
 
 Each validator needs access to prior nodes. The "context" grows with each stage. `validate_node4` needs **four** prior nodes -- the largest context window in the pipeline. This growing context requirement is the signature of context-sensitive computation.
 
-Every L2 rule in `CONSTRAINT_RULES.md:28-52` follows the same structural pattern: "value X in node N must exist as a key in node M." There are 20 such rules. Each one is a context-sensitive cross-reference check that no amount of Pydantic schema engineering can express within a single model.
+Every L2 rule in `constraint-rules.md:28-52` follows the same structural pattern: "value X in node N must exist as a key in node M." There are 20 such rules. Each one is a context-sensitive cross-reference check that no amount of Pydantic schema engineering can express within a single model.
 
 ---
 
@@ -302,7 +302,7 @@ Walk through `assemble_node1()` (`assemblers.py:46-187`) as a transducer:
 
 **Step 4 (Enforce symmetry, lines 138-150):** If event A lists B as a successor, ensure B lists A as a predecessor. This is a **fixpoint computation** on the output -- it iterates until no more changes are needed. This goes slightly beyond a single-pass FST, but it is still deterministic and terminating because the event set is finite and each iteration can only add links (never remove them), so it must converge.
 
-The word "deterministically" in `ARCHITECTURE_DECISIONS.md:14` is doing heavy theoretical lifting. It means the assembler is a **function**, not a relation. Given the same input fragments, it always produces exactly the same output. No nondeterminism. No LLM involvement. Pure mechanical transformation -- exactly what transducers provide.
+The word "deterministically" in `architecture-decisions.md:14` is doing heavy theoretical lifting. It means the assembler is a **function**, not a relation. Given the same input fragments, it always produces exactly the same output. No nondeterminism. No LLM involvement. Pure mechanical transformation -- exactly what transducers provide.
 
 ---
 
@@ -317,7 +317,7 @@ The five-node pipeline is itself a finite state machine:
           [Retry]  [Retry]  [Retry]  [Retry]  [Retry]
 ```
 
-Each node is a state. The transition from one state to the next has a **guard condition**: validation must pass. If `ede validate` returns errors, the pipeline stays in the current state and re-attempts. This is the retry loop described in `ARCHITECTURE_DECISIONS.md:47-54` -- Claude Code reads findings, fixes its output, and re-validates. The retry is a self-loop on the current state, not a backward transition.
+Each node is a state. The transition from one state to the next has a **guard condition**: validation must pass. If `ede validate` returns errors, the pipeline stays in the current state and re-attempts. This is the retry loop described in `architecture-decisions.md:47-54` -- Claude Code reads findings, fixes its output, and re-validates. The retry is a self-loop on the current state, not a backward transition.
 
 `validate_pipeline()` (`constraints.py:457-479`) encodes the dependency DAG. The progressive conditionals -- `if n1 and n0`, `if n2 and n1`, `if n3 and n2`, `if n4 and n3 and n2 and n1` -- formalize the state ordering. Node 2 cannot be validated without Node 1. Node 4 cannot be validated without Nodes 1, 2, and 3.
 
@@ -358,18 +358,71 @@ Restating in automata terms:
 - L1 schema validation: recognized by **PDA** (pushdown automaton)
 - L2 cross-node validation: recognized by **LBA** (linear bounded automaton)
 - L3 semantic validation: also recognized by LBA, with domain interpretation
+- L4 path verification: **not an automaton at all** -- an oracle query (Section 14)
 
 The **strict power hierarchy**: DFA < PDA < LBA < TM. Each class recognizes strictly more languages than the one below it. This is not a conjecture; it is proven.
 
 The practical implication is mathematical: **a `@model_validator` cannot implement L2 checks**. A model validator has access to the data within its own model instance. This is context-free scope -- the validator sees one subtree of the parse tree. But L2 checks need data from other models. This is context-sensitive scope -- the validator needs to compare subtrees from different parts of the overall structure. No amount of clever Pydantic engineering can bridge this gap. It is like trying to match `a^n b^n c^n` with a context-free grammar -- the language is provably not context-free.
 
-`ARCHITECTURE_DECISIONS.md:42` explicitly rejects this: *"`@model_validator` for all L2/L3"* with the reason *"Only true for intra-model checks. Cross-node validation cannot be model validators."* The architecture document is stating a consequence of the Chomsky hierarchy.
+`architecture-decisions.md:42` explicitly rejects this: *"`@model_validator` for all L2/L3"* with the reason *"Only true for intra-model checks. Cross-node validation cannot be model validators."* The architecture document is stating a consequence of the Chomsky hierarchy.
 
-The L1 promotions (`ARCHITECTURE_DECISIONS.md:24-31`) are the mirror case. `GapSummary.check_total()`, `Node3Metrics.check_totals()`, and `NewObstacle.check_new_prefix()` were moved **down** the hierarchy. They were implemented at L3 in V2 (the Zod version), but they were always context-free -- they only reference fields within their own model. Moving them to `@model_validator` places them at the correct hierarchy level. These promotions do not collapse the hierarchy; they correct a V2 implementation that placed checks too high.
+The L1 promotions (`architecture-decisions.md:24-31`) are the mirror case. `GapSummary.check_total()`, `Node3Metrics.check_totals()`, and `NewObstacle.check_new_prefix()` were moved **down** the hierarchy. They were implemented at L3 in V2 (the Zod version), but they were always context-free -- they only reference fields within their own model. Moving them to `@model_validator` places them at the correct hierarchy level. These promotions do not collapse the hierarchy; they correct a V2 implementation that placed checks too high.
 
 ---
 
-## 14. What EDE Intentionally Cannot Express
+## 14. L4 -- The Layer Outside the Language
+
+Sections 1 through 13 describe three layers, and that is deliberate: L1, L2,
+and L3 are the layers that decide **membership**. Each asks a closed question
+about a string -- does this document belong to the language? Each is answerable
+by inspecting the document and nothing else. That is exactly what places them
+on the Chomsky hierarchy at all.
+
+L4 is not on the hierarchy, and the reason is not that it is harder. It is that
+it asks a different kind of question.
+
+Consider `L4-path-missing`. The claim under test is that `events[3].location.file`
+names a file that exists. Nothing in the document can settle this. Two documents
+that are byte-identical -- indistinguishable to any grammar, any automaton, any
+parser -- can disagree on this predicate, because the answer lives in the
+filesystem rather than in the string.
+
+In logical terms, L1 through L3 are **proof-theoretic**: they ask whether a
+string is derivable from a grammar. L4 is **model-theoretic**: it asks whether
+the names in a string denote anything under an interpretation. The filesystem
+*is* the interpretation. Without fixing one, "the language of JSON documents
+whose file paths exist" does not name a language at all -- membership is not a
+function of the string.
+
+Two consequences follow, and both are visible in the code.
+
+**L4 is parameterized by a snapshot.** Every verifier takes `repo_root: Path`
+as an argument, because the predicate is meaningless without it. The same
+artifact validated against two commits can produce different findings, and
+neither is wrong. L1 through L3 need no such parameter -- their answers depend
+only on the artifact.
+
+**L4 findings are `WARN`, never `ERROR`.** This looks like a severity choice
+and is really a soundness one. An L2 violation is a proof that the document is
+malformed, and that proof does not expire. An L4 violation is an observation
+about the world at a moment: the file may have been renamed, moved, or deleted
+after a correct extraction. Promoting it to a hard error would assert a
+certainty the check cannot supply.
+
+None of this makes L4 the weak layer. It is the only layer that can catch the
+failure the other three are structurally blind to. L1 through L3 can certify a
+document in which every single path was invented, because such a document can
+be perfectly self-consistent -- and a model producing fluent, coherent,
+entirely fabricated references is not a hypothetical failure mode. Internal
+consistency is exactly what a language-membership check certifies, and exactly
+what a confident fabrication supplies.
+
+The grammar tells you the artifact is well-formed. Only an oracle tells you it
+is about the code.
+
+---
+
+## 15. What EDE Intentionally Cannot Express
 
 Every formal system has an expressiveness boundary. EDE's boundary is carefully chosen to guarantee decidability while covering the validation needs of the domain extraction pipeline.
 
@@ -387,13 +440,13 @@ Each limitation traces back to a known result in computability theory. EDE accep
 
 ---
 
-## 15. Where to Go From Here
+## 16. Where to Go From Here
 
 The concepts in this document connect to a deep body of theory. Here are entry points for further study, organized by the sections they extend:
 
 **Foundations (Sections 1-3):** Michael Sipser, *Introduction to the Theory of Computation* (3rd ed., Cengage). The standard graduate text. Chapters 1-5 cover everything from DFAs through decidability. Sipser's presentation is unusually clear, and every concept in this document has a corresponding formal treatment there.
 
-**Automata in Depth (Sections 4-6):** Hopcroft, Motwani & Ullman, *Introduction to Automata Theory, Languages, and Computation* (3rd ed., Pearson). More detailed than Sipser on automata constructions. Chapter 4 on context-free grammars and Chapter 9 on undecidability are particularly relevant to Sections 5 and 14.
+**Automata in Depth (Sections 4-6):** Hopcroft, Motwani & Ullman, *Introduction to Automata Theory, Languages, and Computation* (3rd ed., Pearson). More detailed than Sipser on automata constructions. Chapter 4 on context-free grammars and Chapter 9 on undecidability are particularly relevant to Sections 5 and 15.
 
 **Compiler Architecture (Section 8):** Aho, Lam, Sethi & Ullman, *Compilers: Principles, Techniques, and Tools* (2nd ed., "The Dragon Book"). Chapters 2-6 cover the lexer-parser-semantic-analyzer pipeline that EDE mirrors. Chapter 5 on syntax-directed translation formalizes the attribute grammar concept mentioned in Section 7.
 
@@ -403,8 +456,8 @@ The concepts in this document connect to a deep body of theory. Here are entry p
 
 **Transducers (Section 10):** Berstel, *Transductions and Context-Free Languages* (Teubner, 1979). The formal theory behind the assembler-as-transducer analogy. More accessible: the Wikipedia article on "Finite-state transducer" gives the essential definitions.
 
-**Decidability (Sections 12, 14):** Sipser again, Chapters 4-5. Rice's theorem (Section 14) is in Chapter 5. The key takeaway: EDE stays below the Turing-complete threshold on purpose, and the theory explains exactly what it gives up in exchange for guaranteed termination.
+**Decidability (Sections 12, 15):** Sipser again, Chapters 4-5. Rice's theorem (Section 15) is in Chapter 5. The key takeaway: EDE stays below the Turing-complete threshold on purpose, and the theory explains exactly what it gives up in exchange for guaranteed termination.
 
 ---
 
-*This document maps the EDE codebase to formal language theory and automata. It is a companion to `ARCHITECTURE_DECISIONS.md` (which records the engineering decisions) and `CONSTRAINT_RULES.md` (which catalogues the validation rules). Together, the three documents answer: what rules exist, why the architecture is the way it is, and what theoretical framework underlies both.*
+*This document maps the EDE codebase to formal language theory and automata. It is a companion to `architecture-decisions.md` (which records the engineering decisions) and `constraint-rules.md` (which catalogues the validation rules). Together, the three documents answer: what rules exist, why the architecture is the way it is, and what theoretical framework underlies both.*
